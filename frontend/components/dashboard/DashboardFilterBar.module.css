@@ -1,0 +1,115 @@
+/* -----------------------------------------------------------------------------
+   Arogya AI — Dashboard Filter Bar Styles
+   ----------------------------------------------------------------------------- */
+
+.filterContainer {
+  background-color: var(--color-bg-surface);
+  border: var(--border-width-sm) solid var(--color-border-subtle);
+  border-radius: var(--radius-lg);
+  padding: var(--space-5);
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.headerRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
+
+.titleArea {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.filterTitle {
+  font-size: var(--font-size-h3);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  margin: 0;
+}
+
+.controlsRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: var(--space-4);
+}
+
+.filterGroup {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1-5);
+  min-width: 170px;
+  flex: 1 1 170px;
+}
+
+.filterLabel {
+  font-size: var(--font-size-body-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-secondary);
+}
+
+.actionsGroup {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding-bottom: 2px;
+}
+
+.validationNotice {
+  padding: var(--space-2) var(--space-3);
+  background-color: var(--color-danger-subtle);
+  border: var(--border-width-sm) solid var(--color-danger-border);
+  border-radius: var(--radius-md);
+  color: var(--color-danger-fg);
+  font-size: var(--font-size-body-sm);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.provenanceFooter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  padding-top: var(--space-2);
+  border-top: var(--border-width-sm) solid var(--color-border-subtle);
+  font-size: var(--font-size-micro);
+  color: var(--color-text-tertiary);
+}
+
+/* -----------------------------------------------------------------------------
+   Responsive Breakpoints
+   ----------------------------------------------------------------------------- */
+@media (max-width: 768px) {
+  .filterContainer {
+    padding: var(--space-4);
+  }
+
+  .controlsRow {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .filterGroup {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .actionsGroup {
+    justify-content: flex-end;
+  }
+
+  .provenanceFooter {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

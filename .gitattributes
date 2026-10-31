@@ -1,0 +1,47 @@
+# Auto-normalize line endings to LF across all operating systems
+* text=auto eol=lf
+
+# Explicit text files
+*.py text eol=lf
+*.js text eol=lf
+*.jsx text eol=lf
+*.ts text eol=lf
+*.tsx text eol=lf
+*.json text eol=lf
+*.yaml text eol=lf
+*.yml text eol=lf
+*.md text eol=lf
+*.css text eol=lf
+*.html text eol=lf
+*.sh text eol=lf
+*.sql text eol=lf
+*.toml text eol=lf
+*.ini text eol=lf
+*.env.example text eol=lf
+.gitignore text eol=lf
+.gitattributes text eol=lf
+.editorconfig text eol=lf
+
+# Explicit binary files to prevent line-ending mangling
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.webp binary
+*.svg text
+*.pdf binary
+*.dcm binary
+*.dicom binary
+*.pt binary
+*.pth binary
+*.bin binary
+*.safetensors binary
+*.onnx binary
+*.h5 binary
+*.hdf5 binary
+*.parquet binary
+*.gz binary
+*.zip binary
+*.tar binary
+*.7z binary

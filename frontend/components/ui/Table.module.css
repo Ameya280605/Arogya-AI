@@ -1,0 +1,75 @@
+/* ==============================================================================
+   Arogya AI — Table Primitive Styles
+   Consumes semantic design tokens for dense data, observation tables, and borders.
+   ============================================================================== */
+
+.wrapper {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  border: var(--border-width-sm) solid var(--color-border-subtle);
+  border-radius: var(--radius-lg);
+  background-color: var(--color-bg-surface);
+  box-shadow: var(--shadow-sm);
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-family: var(--font-sans);
+  font-size: var(--font-size-body);
+}
+
+.caption {
+  padding: var(--space-3) var(--space-4);
+  font-size: var(--font-size-body-sm);
+  color: var(--color-text-muted);
+  text-align: left;
+  caption-side: bottom;
+}
+
+.header {
+  border-bottom: var(--border-width-sm) solid var(--color-border-subtle);
+  background-color: var(--color-bg-surface-subtle);
+}
+
+.th {
+  padding: var(--space-table-cell-y) var(--space-table-cell-x);
+  font-size: var(--font-size-caption);
+  font-weight: var(--font-weight-semibold);
+  text-transform: uppercase;
+  letter-spacing: var(--letter-spacing-wider);
+  color: var(--color-text-muted);
+  white-space: nowrap;
+}
+
+.tbody {
+  background-color: var(--color-bg-surface);
+}
+
+.row {
+  border-bottom: var(--border-width-sm) solid var(--color-border-subtle);
+  transition: background-color var(--motion-duration-fast) var(--motion-easing-default);
+}
+
+.row:last-child {
+  border-bottom: none;
+}
+
+.tbody .row:hover {
+  background-color: var(--color-bg-surface-subtle);
+}
+
+.td {
+  padding: var(--space-table-cell-y) var(--space-table-cell-x);
+  font-size: var(--font-size-body);
+  color: var(--color-text-primary);
+  vertical-align: middle;
+}
+
+.footer {
+  border-top: var(--border-width-sm) solid var(--color-border-subtle);
+  background-color: var(--color-bg-surface-subtle);
+  font-weight: var(--font-weight-medium);
+}

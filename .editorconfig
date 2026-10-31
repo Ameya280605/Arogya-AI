@@ -1,0 +1,29 @@
+# EditorConfig configuration for Arogya AI
+# https://editorconfig.org
+
+root = true
+
+# Top-level default settings
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+indent_style = space
+indent_size = 4
+
+# Python files
+[*.py]
+indent_style = space
+indent_size = 4
+
+# Frontend, web, and configuration files
+[*.{js,jsx,ts,tsx,css,scss,html,json,yaml,yml}]
+indent_style = space
+indent_size = 2
+
+# Markdown documentation
+[*.md]
+trim_trailing_whitespace = false
+indent_style = space
+indent_size = 2

@@ -1,0 +1,82 @@
+/* ==============================================================================
+   Arogya AI — Tabs Primitive Styles
+   Consumes semantic design tokens for accessible clinical tab navigation.
+   ============================================================================== */
+
+.tabs {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  width: 100%;
+}
+
+.list {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  background-color: var(--color-bg-surface-subtle);
+  border: var(--border-width-sm) solid var(--color-border-subtle);
+  border-radius: var(--radius-md);
+  padding: var(--space-1);
+  align-self: flex-start;
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+.trigger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-sans);
+  font-size: var(--font-size-body-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-secondary);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  white-space: nowrap;
+  user-select: none;
+  transition: background-color var(--motion-duration-fast) var(--motion-easing-default),
+              color var(--motion-duration-fast) var(--motion-easing-default),
+              box-shadow var(--motion-duration-fast) var(--motion-easing-default);
+}
+
+.trigger:hover:not([aria-selected="true"]):not(:disabled) {
+  color: var(--color-text-primary);
+  background-color: var(--color-bg-surface);
+}
+
+.triggerActive {
+  background-color: var(--color-bg-surface);
+  color: var(--color-text-primary);
+  font-weight: var(--font-weight-semibold);
+  box-shadow: var(--shadow-sm);
+}
+
+.trigger:focus-visible {
+  outline: var(--focus-ring-width) solid var(--color-focus-ring);
+  outline-offset: var(--focus-ring-offset);
+}
+
+.trigger:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.content {
+  outline: none;
+  animation: fadeIn var(--motion-duration-fast) var(--motion-easing-default);
+}
+
+.content:focus-visible {
+  outline: var(--focus-ring-width) solid var(--color-focus-ring);
+  outline-offset: var(--focus-ring-offset);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}

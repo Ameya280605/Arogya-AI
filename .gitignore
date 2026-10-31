@@ -1,0 +1,196 @@
+# ==============================================================================
+# Arogya AI — Root .gitignore
+# Cross-platform gitignore for Windows, Python/FastAPI, and Node/Next.js
+# ==============================================================================
+
+# ------------------------------------------------------------------------------
+# Operating System & File System Metadata
+# ------------------------------------------------------------------------------
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+desktop.ini
+$RECYCLE.BIN/
+*.cab
+*.msi
+*.msix
+*.msm
+*.msp
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# Linux
+*~
+.fuse_hidden*
+.directory
+.Trash-*
+
+# ------------------------------------------------------------------------------
+# Developer Environments & Editors
+# ------------------------------------------------------------------------------
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+.idea/
+*.sublime-project
+*.sublime-workspace
+*.swp
+*.swo
+*~
+*.bak
+
+# ------------------------------------------------------------------------------
+# Environment Variables & Secrets
+# ------------------------------------------------------------------------------
+# Protect all environment and secret files
+.env
+.env.*
+*.env
+*.env.local
+*.env.development.local
+*.env.test.local
+*.env.production.local
+
+# Explicitly whitelist the safe documentation template
+!.env.example
+!**/.env.example
+
+# Credentials & cryptographic keys
+*.pem
+*.key
+*.cert
+*.crt
+*.pfx
+*.p12
+id_rsa
+id_ecdsa
+id_ed25519
+secrets/
+private/
+
+# ------------------------------------------------------------------------------
+# Python & Virtual Environments
+# ------------------------------------------------------------------------------
+# Bytecode and caches
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Environments
+.venv/
+venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+
+# Testing & Quality Tools
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+.coverage.*
+htmlcov/
+nosetests.xml
+coverage.xml
+*.cover
+*.pyre/
+
+# Packaging & Distribution
+build/
+dist/
+*.egg-info/
+.eggs/
+*.egg
+pip-wheel-metadata/
+
+# ------------------------------------------------------------------------------
+# Node.js & Next.js Frontend
+# ------------------------------------------------------------------------------
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Next.js build output
+.next/
+out/
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# ------------------------------------------------------------------------------
+# Machine Learning, Datasets & Models
+# ------------------------------------------------------------------------------
+# Model weights & large binary checkpoints (do not commit to Git)
+*.pt
+*.pth
+*.bin
+*.safetensors
+*.onnx
+*.h5
+*.hdf5
+*.pkl
+*.joblib
+*.ckpt
+
+# Local raw and large processed data folders
+data/raw/
+data/processed/
+data/cache/
+*.csv.gz
+*.parquet.gz
+
+# Retain sample fixture directories
+!data/samples/
+!data/schemas/
+!data/synthetic/
+
+# Vector database indexes & local vector storage
+chroma_db/
+faiss_index/
+vector_store/
+qdrant_storage/
+
+# ------------------------------------------------------------------------------
+# Databases & Local Persistence
+# ------------------------------------------------------------------------------
+*.sqlite
+*.sqlite3
+*.db
+*.db-journal
+*.db-wal
+postgres_data/
+backups/
+*.dump
+*.sql.gz
+
+# Local file and asset storage (Module 7)
+storage/
+storage/uploads/
+
+# ------------------------------------------------------------------------------
+# General Logs & Temporary Files
+# ------------------------------------------------------------------------------
+logs/
+*.log
+tmp/
+temp/
+scratch/
+run/
+
+# Include the Tabular ML baseline model
+!ml/tabular/artifacts/tabular_baseline.joblib

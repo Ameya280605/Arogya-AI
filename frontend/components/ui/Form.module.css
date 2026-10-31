@@ -1,0 +1,170 @@
+/* ==============================================================================
+   Arogya AI — Form Primitive Styles
+   Consumes semantic design tokens for controls, labels, and accessible states.
+   ============================================================================== */
+
+.formField {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  width: 100%;
+}
+
+.label {
+  font-size: var(--font-size-body-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-primary);
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+.requiredStar {
+  color: var(--color-danger-fg);
+  font-weight: var(--font-weight-bold);
+}
+
+.input,
+.select,
+.textarea {
+  width: 100%;
+  font-family: var(--font-sans);
+  font-size: var(--font-size-body);
+  color: var(--color-text-primary);
+  background-color: var(--color-bg-surface);
+  border: var(--border-width-sm) solid var(--color-border-default);
+  border-radius: var(--radius-md);
+  padding: 0 var(--space-3);
+  transition: border-color var(--motion-duration-fast) var(--motion-easing-default),
+              box-shadow var(--motion-duration-fast) var(--motion-easing-default);
+}
+
+.input {
+  height: var(--control-height-md);
+}
+
+.inputSm {
+  height: var(--control-height-sm);
+  font-size: var(--font-size-body-sm);
+  padding: 0 var(--space-2);
+}
+
+.textarea {
+  padding: var(--space-3);
+  min-height: 80px;
+  resize: vertical;
+  line-height: var(--line-height-base);
+}
+
+.select {
+  height: var(--control-height-md);
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right var(--space-3) center;
+  padding-right: var(--space-8);
+  cursor: pointer;
+}
+
+.input:focus-visible,
+.select:focus-visible,
+.textarea:focus-visible {
+  outline: var(--focus-ring-width) solid var(--color-focus-ring);
+  outline-offset: var(--focus-ring-offset);
+  border-color: var(--color-border-focus);
+}
+
+/* Invalid State */
+.invalid {
+  border-color: var(--color-danger-fg);
+}
+
+.invalid:focus-visible {
+  outline-color: var(--color-danger-fg);
+  border-color: var(--color-danger-fg);
+}
+
+/* Disabled State */
+.input:disabled,
+.select:disabled,
+.textarea:disabled {
+  background-color: var(--color-disabled-bg);
+  color: var(--color-disabled-fg);
+  border-color: var(--color-disabled-border);
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+/* Helper & Error Text */
+.helperText {
+  font-size: var(--font-size-caption);
+  color: var(--color-text-muted);
+  line-height: var(--line-height-base);
+}
+
+.errorText {
+  font-size: var(--font-size-caption);
+  color: var(--color-danger-fg);
+  font-weight: var(--font-weight-medium);
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+/* Checkbox */
+.checkboxContainer {
+  display: inline-flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  cursor: pointer;
+  user-select: none;
+}
+
+.checkboxContainerDisabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.checkboxInput {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.checkboxCustom {
+  width: 18px;
+  height: 18px;
+  border-radius: var(--radius-xs);
+  border: var(--border-width-sm) solid var(--color-border-default);
+  background-color: var(--color-bg-surface);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 2px;
+  transition: background-color var(--motion-duration-fast) var(--motion-easing-default),
+              border-color var(--motion-duration-fast) var(--motion-easing-default);
+}
+
+.checkboxInput:checked + .checkboxCustom {
+  background-color: var(--color-brand-primary);
+  border-color: var(--color-brand-primary);
+  color: var(--color-text-inverse);
+}
+
+.checkboxInput:focus-visible + .checkboxCustom {
+  outline: var(--focus-ring-width) solid var(--color-focus-ring);
+  outline-offset: var(--focus-ring-offset);
+}
+
+.checkboxLabelText {
+  font-size: var(--font-size-body);
+  color: var(--color-text-primary);
+  line-height: var(--line-height-base);
+}
+
+.checkboxDescription {
+  font-size: var(--font-size-body-sm);
+  color: var(--color-text-muted);
+}

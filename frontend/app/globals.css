@@ -1,0 +1,386 @@
+/* ==============================================================================
+   Arogya AI — Global Stylesheet & Design Tokens System
+   Module 4, Phase 4.2: Design Tokens and Visual Foundation.
+   Clinical, research-oriented design tokens, accessible reset, and typography.
+   ============================================================================== */
+
+:root {
+  /* ---------------------------------------------------------------------------
+     1. Color Palette — Clinical Light Mode (Default)
+     --------------------------------------------------------------------------- */
+
+  /* Brand Primary (Clinical Deep Teal / Slate Cyan) */
+  --color-brand-primary: #0f766e;
+  --color-brand-hover: #115e59;
+  --color-brand-active: #134e4a;
+  --color-brand-subtle: #f0fdfa;
+  --color-brand-border: #99f6e4;
+  --color-brand-fg: #134e4a;
+
+  /* Secondary Accent (Precision Slate / Medical Blue) */
+  --color-accent-primary: #0284c7;
+  --color-accent-hover: #0369a1;
+  --color-accent-subtle: #f0f9ff;
+  --color-accent-border: #bae6fd;
+  --color-accent-fg: #0369a1;
+
+  /* Page Surfaces */
+  --color-bg-canvas: #f8fafc;
+  --color-bg-surface: #ffffff;
+  --color-bg-surface-elevated: #ffffff;
+  --color-bg-surface-subtle: #f1f5f9;
+  --color-bg-surface-muted: #e2e8f0;
+
+  /* Typography / Foreground Colors */
+  --color-text-primary: #0f172a;
+  --color-text-secondary: #334155;
+  --color-text-muted: #64748b;
+  --color-text-inverse: #ffffff;
+
+  /* Borders & Dividers */
+  --color-border-subtle: #e2e8f0;
+  --color-border-default: #cbd5e1;
+  --color-border-strong: #94a3b8;
+  --color-border-focus: #0f766e;
+
+  /* Focus Indicator */
+  --color-focus-ring: #0e7490;
+  --focus-ring-width: 2px;
+  --focus-ring-offset: 2px;
+
+  /* Semantic Status Colors (Normal Labs / Verified States) */
+  --color-success-fg: #166534;
+  --color-success-bg: #f0fdf4;
+  --color-success-border: #bbf7d0;
+  --color-success-icon: #15803d;
+
+  /* Semantic Warning (Clinical Caution / Research Notices) */
+  --color-warning-fg: #854d0e;
+  --color-warning-bg: #fefce8;
+  --color-warning-border: #fef08a;
+  --color-warning-icon: #ca8a04;
+
+  /* Semantic Danger (Out-of-range Findings / Critical Alerts) */
+  --color-danger-fg: #991b1b;
+  --color-danger-bg: #fef2f2;
+  --color-danger-border: #fecaca;
+  --color-danger-icon: #dc2626;
+
+  /* Semantic Information (Protocols / System Notices) */
+  --color-info-fg: #1e40af;
+  --color-info-bg: #eff6ff;
+  --color-info-border: #bfdbfe;
+  --color-info-icon: #2563eb;
+
+  /* Disabled State */
+  --color-disabled-fg: #94a3b8;
+  --color-disabled-bg: #f1f5f9;
+  --color-disabled-border: #e2e8f0;
+
+  /* ---------------------------------------------------------------------------
+     2. Typography Tokens
+     --------------------------------------------------------------------------- */
+  --font-sans: var(--font-geist-sans), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+
+  /* Type Scale */
+  --font-size-display: clamp(2rem, 3.5vw, 2.75rem);
+  --font-size-h1: clamp(1.625rem, 2.75vw, 2.125rem);
+  --font-size-h2: 1.375rem;
+  --font-size-h3: 1.125rem;
+  --font-size-h4: 1rem;
+  --font-size-body-lg: 1.125rem;
+  --font-size-body: 0.9375rem;
+  --font-size-body-sm: 0.875rem;
+  --font-size-caption: 0.75rem;
+  --font-size-micro: 0.6875rem;
+
+  /* Font Weights */
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  /* Line Heights */
+  --line-height-tight: 1.15;
+  --line-height-heading: 1.3;
+  --line-height-base: 1.55;
+  --line-height-relaxed: 1.65;
+
+  /* Letter Spacing */
+  --letter-spacing-tight: -0.025em;
+  --letter-spacing-normal: 0em;
+  --letter-spacing-wide: 0.03em;
+  --letter-spacing-wider: 0.06em;
+
+  /* ---------------------------------------------------------------------------
+     3. Spacing Scale (8pt / 4pt Systematic Grid)
+     --------------------------------------------------------------------------- */
+  --space-0: 0;
+  --space-1: 0.25rem;   /* 4px  */
+  --space-2: 0.5rem;    /* 8px  */
+  --space-3: 0.75rem;   /* 12px */
+  --space-4: 1rem;      /* 16px */
+  --space-5: 1.25rem;   /* 20px */
+  --space-6: 1.5rem;    /* 24px */
+  --space-8: 2rem;      /* 32px */
+  --space-10: 2.5rem;   /* 40px */
+  --space-12: 3rem;     /* 48px */
+  --space-16: 4rem;     /* 64px */
+  --space-20: 5rem;     /* 80px */
+
+  /* Dense Data Table & Observation Grid Spacing */
+  --space-table-cell-y: 0.625rem;
+  --space-table-cell-x: 0.875rem;
+
+  /* ---------------------------------------------------------------------------
+     4. Borders & Elevation
+     --------------------------------------------------------------------------- */
+  --border-width-sm: 1px;
+  --border-width-md: 2px;
+
+  --radius-none: 0;
+  --radius-xs: 3px;
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-full: 9999px;
+
+  /* Subtle, Clinical Elevation */
+  --shadow-none: none;
+  --shadow-sm: 0 1px 2px 0 rgb(15 23 42 / 0.05);
+  --shadow-md: 0 4px 6px -1px rgb(15 23 42 / 0.07), 0 2px 4px -2px rgb(15 23 42 / 0.05);
+  --shadow-lg: 0 10px 15px -3px rgb(15 23 42 / 0.08), 0 4px 6px -4px rgb(15 23 42 / 0.04);
+
+  /* ---------------------------------------------------------------------------
+     5. Layout & Sizing Tokens
+     --------------------------------------------------------------------------- */
+  --layout-max-width: 1120px;
+  --layout-readable-width: 760px;
+  --layout-page-gutter-x: var(--space-6);
+  --layout-page-gutter-y: var(--space-12);
+
+  /* Standard Control Heights */
+  --control-height-sm: 32px;
+  --control-height-md: 40px;
+  --control-height-lg: 48px;
+
+  /* Table Row Heights */
+  --table-row-dense: 36px;
+  --table-row-standard: 44px;
+
+  /* ---------------------------------------------------------------------------
+     6. Motion & Transition Scale
+     --------------------------------------------------------------------------- */
+  --motion-duration-fast: 150ms;
+  --motion-duration-normal: 250ms;
+  --motion-easing-default: cubic-bezier(0.16, 1, 0.3, 1);
+
+  /* ---------------------------------------------------------------------------
+     7. Backward-Compatibility Aliases (Phase 4.1 Names)
+     --------------------------------------------------------------------------- */
+  --bg-primary: var(--color-bg-canvas);
+  --bg-surface: var(--color-bg-surface);
+  --bg-surface-elevated: var(--color-bg-surface-elevated);
+  --bg-subtle: var(--color-bg-surface-subtle);
+  --text-primary: var(--color-text-primary);
+  --text-secondary: var(--color-text-secondary);
+  --text-muted: var(--color-text-muted);
+  --border-subtle: var(--color-border-subtle);
+  --border-strong: var(--color-border-default);
+  --accent-primary: var(--color-brand-primary);
+  --accent-primary-hover: var(--color-brand-hover);
+  --accent-subtle: var(--color-brand-subtle);
+  --accent-border: var(--color-brand-border);
+  --accent-text: var(--color-brand-fg);
+  --warning-bg: var(--color-warning-bg);
+  --warning-border: var(--color-warning-border);
+  --warning-text: var(--color-warning-fg);
+  --warning-icon: var(--color-warning-icon);
+  --font-family-base: var(--font-sans);
+  --font-family-mono: var(--font-mono);
+}
+
+/* -----------------------------------------------------------------------------
+   Dark Mode Palette Tokens
+   ----------------------------------------------------------------------------- */
+@media (prefers-color-scheme: dark) {
+  :root {
+    /* Brand Primary Dark */
+    --color-brand-primary: #14b8a6;
+    --color-brand-hover: #2dd4bf;
+    --color-brand-active: #5eead4;
+    --color-brand-subtle: rgba(20, 184, 166, 0.12);
+    --color-brand-border: #134e4a;
+    --color-brand-fg: #5eead4;
+
+    /* Secondary Accent Dark */
+    --color-accent-primary: #38bdf8;
+    --color-accent-hover: #7dd3fc;
+    --color-accent-subtle: rgba(56, 189, 248, 0.12);
+    --color-accent-border: #0c4a6e;
+    --color-accent-fg: #7dd3fc;
+
+    /* Page Surfaces Dark */
+    --color-bg-canvas: #090d16;
+    --color-bg-surface: #0f172a;
+    --color-bg-surface-elevated: #1e293b;
+    --color-bg-surface-subtle: #162032;
+    --color-bg-surface-muted: #1e293b;
+
+    /* Typography Dark */
+    --color-text-primary: #f8fafc;
+    --color-text-secondary: #cbd5e1;
+    --color-text-muted: #94a3b8;
+    --color-text-inverse: #0f172a;
+
+    /* Borders Dark */
+    --color-border-subtle: #1e293b;
+    --color-border-default: #334155;
+    --color-border-strong: #475569;
+    --color-border-focus: #14b8a6;
+
+    /* Focus Ring Dark */
+    --color-focus-ring: #2dd4bf;
+
+    /* Semantic Status Dark */
+    --color-success-fg: #86efac;
+    --color-success-bg: rgba(22, 101, 52, 0.22);
+    --color-success-border: #14532d;
+    --color-success-icon: #4ade80;
+
+    --color-warning-fg: #fde047;
+    --color-warning-bg: rgba(133, 77, 14, 0.22);
+    --color-warning-border: #713f12;
+    --color-warning-icon: #facc15;
+
+    --color-danger-fg: #fca5a5;
+    --color-danger-bg: rgba(153, 27, 27, 0.22);
+    --color-danger-border: #7f1d1d;
+    --color-danger-icon: #f87171;
+
+    --color-info-fg: #93c5fd;
+    --color-info-bg: rgba(30, 64, 175, 0.22);
+    --color-info-border: #1e3a8a;
+    --color-info-icon: #60a5fa;
+
+    /* Disabled Dark */
+    --color-disabled-fg: #64748b;
+    --color-disabled-bg: #1e293b;
+    --color-disabled-border: #334155;
+
+    /* Dark Shadows */
+    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.35);
+    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.4), 0 2px 4px -2px rgb(0 0 0 / 0.3);
+    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.5), 0 4px 6px -4px rgb(0 0 0 / 0.3);
+  }
+}
+
+/* -----------------------------------------------------------------------------
+   Modern Minimal CSS Reset & Defaults
+   ----------------------------------------------------------------------------- */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  height: 100%;
+  -webkit-text-size-adjust: 100%;
+  tab-size: 4;
+}
+
+body {
+  min-height: 100%;
+  font-family: var(--font-sans);
+  font-size: var(--font-size-body);
+  color: var(--color-text-primary);
+  background-color: var(--color-bg-canvas);
+  line-height: var(--line-height-base);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+/* Accessible Skip Link */
+.skip-link {
+  position: absolute;
+  top: -9999px;
+  left: var(--space-4);
+  background-color: var(--color-brand-primary);
+  color: var(--color-text-inverse);
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-body-sm);
+  font-weight: var(--font-weight-medium);
+  z-index: 1000;
+  text-decoration: none;
+}
+
+.skip-link:focus {
+  top: var(--space-4);
+  outline: var(--focus-ring-width) solid var(--color-focus-ring);
+  outline-offset: var(--focus-ring-offset);
+}
+
+/* Accessible Keyboard Navigation */
+:focus-visible {
+  outline: var(--focus-ring-width) solid var(--color-focus-ring);
+  outline-offset: var(--focus-ring-offset);
+}
+
+/* High-Contrast Accessible Text Selection */
+::selection {
+  background-color: var(--color-brand-subtle);
+  color: var(--color-brand-fg);
+}
+
+/* Media Elements */
+img, svg, video, canvas, audio, iframe, embed, object {
+  display: block;
+  max-width: 100%;
+}
+
+/* Form Controls */
+input, button, textarea, select {
+  font: inherit;
+  color: inherit;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* Typography Hierarchy */
+h1, h2, h3, h4, h5, h6 {
+  color: var(--color-text-primary);
+  line-height: var(--line-height-heading);
+  font-weight: var(--font-weight-bold);
+  letter-spacing: var(--letter-spacing-tight);
+}
+
+p {
+  color: var(--color-text-secondary);
+}
+
+code, kbd, samp, pre {
+  font-family: var(--font-mono);
+  font-size: 0.875em;
+}
+
+/* -----------------------------------------------------------------------------
+   Accessibility: Reduced Motion Preference
+   ----------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

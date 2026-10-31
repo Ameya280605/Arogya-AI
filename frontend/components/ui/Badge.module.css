@@ -1,0 +1,99 @@
+/* ==============================================================================
+   Arogya AI — Badge Primitive Styles
+   Consumes semantic status tokens for research and platform statuses.
+   ============================================================================== */
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  border-radius: var(--radius-full);
+  font-family: var(--font-sans);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: var(--letter-spacing-wide);
+  white-space: nowrap;
+  line-height: var(--line-height-tight);
+  border: var(--border-width-sm) solid transparent;
+}
+
+/* -----------------------------------------------------------------------------
+   Size Variants
+   ----------------------------------------------------------------------------- */
+.sm {
+  padding: 1px var(--space-2);
+  font-size: var(--font-size-micro);
+  gap: var(--space-1);
+}
+
+.md {
+  padding: var(--space-1) var(--space-3);
+  font-size: var(--font-size-caption);
+}
+
+/* -----------------------------------------------------------------------------
+   Status Variants
+   ----------------------------------------------------------------------------- */
+/* Neutral */
+.neutral {
+  background-color: var(--color-bg-surface-subtle);
+  color: var(--color-text-secondary);
+  border-color: var(--color-border-subtle);
+}
+
+.neutral .dot {
+  background-color: var(--color-text-muted);
+}
+
+/* Info */
+.info {
+  background-color: var(--color-info-bg);
+  color: var(--color-info-fg);
+  border-color: var(--color-info-border);
+}
+
+.info .dot {
+  background-color: var(--color-info-icon);
+}
+
+/* Success */
+.success {
+  background-color: var(--color-success-bg);
+  color: var(--color-success-fg);
+  border-color: var(--color-success-border);
+}
+
+.success .dot {
+  background-color: var(--color-success-icon);
+}
+
+/* Warning */
+.warning {
+  background-color: var(--color-warning-bg);
+  color: var(--color-warning-fg);
+  border-color: var(--color-warning-border);
+}
+
+.warning .dot {
+  background-color: var(--color-warning-icon);
+}
+
+/* Danger */
+.danger {
+  background-color: var(--color-danger-bg);
+  color: var(--color-danger-fg);
+  border-color: var(--color-danger-border);
+}
+
+.danger .dot {
+  background-color: var(--color-danger-icon);
+}
+
+/* -----------------------------------------------------------------------------
+   Indicator Dot
+   ----------------------------------------------------------------------------- */
+.dot {
+  width: 6px;
+  height: 6px;
+  border-radius: var(--radius-full);
+  flex-shrink: 0;
+}

@@ -1,0 +1,110 @@
+{
+  "model_name": "tabular_exasens_baseline",
+  "model_version": "0.1.0-alpha",
+  "model_family": "RandomForestClassifier",
+  "framework": "scikit-learn",
+  "framework_version": "1.9.1",
+  "created_at_utc": "2026-10-31T13:13:34.897048+00:00",
+  "artifact_file": "tabular_baseline.joblib",
+  "sha256_checksum": "a9363cee9fd4c5dd6bebbc824356b5cc1715d00906de316c67c367a9e9ddcf38",
+  "features": [
+    "Age",
+    "Gender",
+    "Smoking",
+    "Imaginary_Min",
+    "Imaginary_Avg",
+    "Real_Min",
+    "Real_Avg"
+  ],
+  "classes": [
+    "HC",
+    "Asthma",
+    "Infected",
+    "COPD"
+  ],
+  "target": "Diagnosis",
+  "training_dataset": {
+    "name": "Exasens respiratory biomarker dataset",
+    "cohort": "Complete biosensor cohort",
+    "total_records": 100,
+    "class_distribution": {
+      "COPD": 40,
+      "HC": 40,
+      "Asthma": 10,
+      "Infected": 10
+    }
+  },
+  "hyperparameters": {
+    "n_estimators": 100,
+    "max_depth": 6,
+    "min_samples_split": 4,
+    "class_weight": "balanced",
+    "random_state": 42,
+    "imputer_strategy": "median"
+  },
+  "evaluation_metrics": {
+    "cv_folds": 5,
+    "cv_macro_f1_mean": 0.707000466853408,
+    "cv_macro_f1_std": 0.06466752026623754,
+    "cv_balanced_acc_mean": 0.7,
+    "cv_balanced_acc_std": 0.042389562394532926,
+    "cv_accuracy_mean": 0.76,
+    "cv_accuracy_std": 0.07999999999999999,
+    "oof_per_class": {
+      "HC": {
+        "precision": 0.7777777777777778,
+        "recall": 0.7,
+        "f1_score": 0.7368421052631579,
+        "support": 40,
+        "sensitivity": 0.7,
+        "specificity": 0.8666666666666667,
+        "true_positive": 28,
+        "false_negative": 12,
+        "false_positive": 8,
+        "true_negative": 52
+      },
+      "Asthma": {
+        "precision": 0.4166666666666667,
+        "recall": 0.5,
+        "f1_score": 0.45454545454545453,
+        "support": 10,
+        "sensitivity": 0.5,
+        "specificity": 0.9222222222222223,
+        "true_positive": 5,
+        "false_negative": 5,
+        "false_positive": 7,
+        "true_negative": 83
+      },
+      "Infected": {
+        "precision": 0.6363636363636364,
+        "recall": 0.7,
+        "f1_score": 0.6666666666666666,
+        "support": 10,
+        "sensitivity": 0.7,
+        "specificity": 0.9555555555555556,
+        "true_positive": 7,
+        "false_negative": 3,
+        "false_positive": 4,
+        "true_negative": 86
+      },
+      "COPD": {
+        "precision": 0.8780487804878049,
+        "recall": 0.9,
+        "f1_score": 0.8888888888888888,
+        "support": 40,
+        "sensitivity": 0.9,
+        "specificity": 0.9166666666666666,
+        "true_positive": 36,
+        "false_negative": 4,
+        "false_positive": 5,
+        "true_negative": 55
+      }
+    }
+  },
+  "limitations": [
+    "Severe minority class scarcity: only 10 Asthma and 10 Infected cases in training cohort.",
+    "Research prototype only: not clinically validated or approved as a medical device.",
+    "Demographic screening without biosensors has high diagnostic overlap."
+  ],
+  "disclaimer": "RESEARCH PROTOTYPE ONLY. This model is an experimental research baseline trained on 100 benchmark samples. It has NOT been clinically validated and must NEVER be used as an autonomous diagnostic tool or for clinical medical decisions."
+}

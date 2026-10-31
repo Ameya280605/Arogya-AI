@@ -1,0 +1,1402 @@
+{
+  "metadata": {
+    "random_state": 42,
+    "cv_folds": 5,
+    "diagnosis_classes": [
+      "HC",
+      "Asthma",
+      "Infected",
+      "COPD"
+    ]
+  },
+  "cohorts": {
+    "full_cohort": {
+      "description": "Full cohort with 3 demographic features (Age, Gender, Smoking)",
+      "sample_count": 399,
+      "features": [
+        "Age",
+        "Gender",
+        "Smoking"
+      ],
+      "models": {
+        "LogisticRegression": {
+          "cv_results": {
+            "cv_folds": 5,
+            "fold_scores": [
+              {
+                "fold": 1,
+                "macro_f1": 0.4093759025705208,
+                "balanced_accuracy": 0.4765625,
+                "accuracy": 0.4125
+              },
+              {
+                "fold": 2,
+                "macro_f1": 0.48873106060606064,
+                "balanced_accuracy": 0.5078125,
+                "accuracy": 0.5125
+              },
+              {
+                "fold": 3,
+                "macro_f1": 0.4163986354775828,
+                "balanced_accuracy": 0.4453125,
+                "accuracy": 0.425
+              },
+              {
+                "fold": 4,
+                "macro_f1": 0.45078111694614037,
+                "balanced_accuracy": 0.4921875,
+                "accuracy": 0.4375
+              },
+              {
+                "fold": 5,
+                "macro_f1": 0.3946142355942119,
+                "balanced_accuracy": 0.4265625,
+                "accuracy": 0.379746835443038
+              }
+            ],
+            "cv_macro_f1_mean": 0.43198019023890327,
+            "cv_macro_f1_std": 0.03383515736261603,
+            "cv_balanced_acc_mean": 0.46968750000000004,
+            "cv_balanced_acc_std": 0.0298695078633713,
+            "cv_accuracy_mean": 0.4334493670886076,
+            "cv_accuracy_std": 0.04395370264591881,
+            "oof_metrics": {
+              "accuracy": 0.43358395989974935,
+              "balanced_accuracy": 0.4697982594936708,
+              "macro_f1": 0.4400200089261938,
+              "weighted_f1": 0.42830261066214603,
+              "macro_precision": 0.4433590989377464,
+              "macro_recall": 0.4697982594936708,
+              "labels": [
+                "HC",
+                "Asthma",
+                "Infected",
+                "COPD"
+              ],
+              "confusion_matrix": [
+                [
+                  47,
+                  44,
+                  61,
+                  8
+                ],
+                [
+                  6,
+                  32,
+                  17,
+                  25
+                ],
+                [
+                  29,
+                  21,
+                  28,
+                  2
+                ],
+                [
+                  2,
+                  11,
+                  0,
+                  66
+                ]
+              ],
+              "per_class": {
+                "HC": {
+                  "precision": 0.5595238095238095,
+                  "recall": 0.29375,
+                  "f1_score": 0.38524590163934425,
+                  "support": 160,
+                  "sensitivity": 0.29375,
+                  "specificity": 0.8451882845188284,
+                  "true_positive": 47,
+                  "false_negative": 113,
+                  "false_positive": 37,
+                  "true_negative": 202
+                },
+                "Asthma": {
+                  "precision": 0.2962962962962963,
+                  "recall": 0.4,
+                  "f1_score": 0.3404255319148936,
+                  "support": 80,
+                  "sensitivity": 0.4,
+                  "specificity": 0.7617554858934169,
+                  "true_positive": 32,
+                  "false_negative": 48,
+                  "false_positive": 76,
+                  "true_negative": 243
+                },
+                "Infected": {
+                  "precision": 0.2641509433962264,
+                  "recall": 0.35,
+                  "f1_score": 0.3010752688172043,
+                  "support": 80,
+                  "sensitivity": 0.35,
+                  "specificity": 0.7554858934169278,
+                  "true_positive": 28,
+                  "false_negative": 52,
+                  "false_positive": 78,
+                  "true_negative": 241
+                },
+                "COPD": {
+                  "precision": 0.6534653465346535,
+                  "recall": 0.8354430379746836,
+                  "f1_score": 0.7333333333333333,
+                  "support": 79,
+                  "sensitivity": 0.8354430379746836,
+                  "specificity": 0.890625,
+                  "true_positive": 66,
+                  "false_negative": 13,
+                  "false_positive": 35,
+                  "true_negative": 285
+                }
+              },
+              "log_loss": 1.0619691188691294,
+              "brier_score": 0.6111049587524541
+            }
+          },
+          "held_out_test_results": {
+            "accuracy": 0.475,
+            "balanced_accuracy": 0.5,
+            "macro_f1": 0.47608145822431536,
+            "weighted_f1": 0.4788243502529217,
+            "macro_precision": 0.4900575447570332,
+            "macro_recall": 0.5,
+            "labels": [
+              "HC",
+              "Asthma",
+              "Infected",
+              "COPD"
+            ],
+            "confusion_matrix": [
+              [
+                12,
+                7,
+                12,
+                1
+              ],
+              [
+                0,
+                6,
+                4,
+                6
+              ],
+              [
+                5,
+                4,
+                7,
+                0
+              ],
+              [
+                0,
+                3,
+                0,
+                13
+              ]
+            ],
+            "per_class": {
+              "HC": {
+                "precision": 0.7058823529411765,
+                "recall": 0.375,
+                "f1_score": 0.4897959183673469,
+                "support": 32,
+                "sensitivity": 0.375,
+                "specificity": 0.8958333333333334,
+                "true_positive": 12,
+                "false_negative": 20,
+                "false_positive": 5,
+                "true_negative": 43
+              },
+              "Asthma": {
+                "precision": 0.3,
+                "recall": 0.375,
+                "f1_score": 0.3333333333333333,
+                "support": 16,
+                "sensitivity": 0.375,
+                "specificity": 0.78125,
+                "true_positive": 6,
+                "false_negative": 10,
+                "false_positive": 14,
+                "true_negative": 50
+              },
+              "Infected": {
+                "precision": 0.30434782608695654,
+                "recall": 0.4375,
+                "f1_score": 0.358974358974359,
+                "support": 16,
+                "sensitivity": 0.4375,
+                "specificity": 0.75,
+                "true_positive": 7,
+                "false_negative": 9,
+                "false_positive": 16,
+                "true_negative": 48
+              },
+              "COPD": {
+                "precision": 0.65,
+                "recall": 0.8125,
+                "f1_score": 0.7222222222222222,
+                "support": 16,
+                "sensitivity": 0.8125,
+                "specificity": 0.890625,
+                "true_positive": 13,
+                "false_negative": 3,
+                "false_positive": 7,
+                "true_negative": 57
+              }
+            },
+            "log_loss": 1.0010463750504115,
+            "brier_score": 0.5760350105215423
+          }
+        },
+        "RandomForest": {
+          "cv_results": {
+            "cv_folds": 5,
+            "fold_scores": [
+              {
+                "fold": 1,
+                "macro_f1": 0.3835227272727273,
+                "balanced_accuracy": 0.390625,
+                "accuracy": 0.3375
+              },
+              {
+                "fold": 2,
+                "macro_f1": 0.4198002808550476,
+                "balanced_accuracy": 0.40625,
+                "accuracy": 0.4
+              },
+              {
+                "fold": 3,
+                "macro_f1": 0.39094913327649905,
+                "balanced_accuracy": 0.40625,
+                "accuracy": 0.3625
+              },
+              {
+                "fold": 4,
+                "macro_f1": 0.31654487464168923,
+                "balanced_accuracy": 0.3125,
+                "accuracy": 0.2875
+              },
+              {
+                "fold": 5,
+                "macro_f1": 0.3305507172884146,
+                "balanced_accuracy": 0.3453125,
+                "accuracy": 0.2911392405063291
+              }
+            ],
+            "cv_macro_f1_mean": 0.3682735466668755,
+            "cv_macro_f1_std": 0.038731360521274565,
+            "cv_balanced_acc_mean": 0.3721875,
+            "cv_balanced_acc_std": 0.03727012878968893,
+            "cv_accuracy_mean": 0.3357278481012659,
+            "cv_accuracy_std": 0.04281323956224071,
+            "oof_metrics": {
+              "accuracy": 0.3358395989974937,
+              "balanced_accuracy": 0.37256724683544307,
+              "macro_f1": 0.36950379360794217,
+              "weighted_f1": 0.34215270857765534,
+              "macro_precision": 0.38030410183875535,
+              "macro_recall": 0.37256724683544307,
+              "labels": [
+                "HC",
+                "Asthma",
+                "Infected",
+                "COPD"
+              ],
+              "confusion_matrix": [
+                [
+                  31,
+                  23,
+                  102,
+                  4
+                ],
+                [
+                  16,
+                  27,
+                  20,
+                  17
+                ],
+                [
+                  50,
+                  11,
+                  19,
+                  0
+                ],
+                [
+                  4,
+                  16,
+                  2,
+                  57
+                ]
+              ],
+              "per_class": {
+                "HC": {
+                  "precision": 0.3069306930693069,
+                  "recall": 0.19375,
+                  "f1_score": 0.23754789272030652,
+                  "support": 160,
+                  "sensitivity": 0.19375,
+                  "specificity": 0.7071129707112971,
+                  "true_positive": 31,
+                  "false_negative": 129,
+                  "false_positive": 70,
+                  "true_negative": 169
+                },
+                "Asthma": {
+                  "precision": 0.35064935064935066,
+                  "recall": 0.3375,
+                  "f1_score": 0.34394904458598724,
+                  "support": 80,
+                  "sensitivity": 0.3375,
+                  "specificity": 0.8432601880877743,
+                  "true_positive": 27,
+                  "false_negative": 53,
+                  "false_positive": 50,
+                  "true_negative": 269
+                },
+                "Infected": {
+                  "precision": 0.13286713286713286,
+                  "recall": 0.2375,
+                  "f1_score": 0.17040358744394618,
+                  "support": 80,
+                  "sensitivity": 0.2375,
+                  "specificity": 0.6112852664576802,
+                  "true_positive": 19,
+                  "false_negative": 61,
+                  "false_positive": 124,
+                  "true_negative": 195
+                },
+                "COPD": {
+                  "precision": 0.7307692307692307,
+                  "recall": 0.7215189873417721,
+                  "f1_score": 0.7261146496815286,
+                  "support": 79,
+                  "sensitivity": 0.7215189873417721,
+                  "specificity": 0.934375,
+                  "true_positive": 57,
+                  "false_negative": 22,
+                  "false_positive": 21,
+                  "true_negative": 299
+                }
+              },
+              "log_loss": 1.3627307717317307,
+              "brier_score": 0.6727502551375523
+            }
+          },
+          "held_out_test_results": {
+            "accuracy": 0.425,
+            "balanced_accuracy": 0.4453125,
+            "macro_f1": 0.43136517765000737,
+            "weighted_f1": 0.4222851245761462,
+            "macro_precision": 0.4235964912280702,
+            "macro_recall": 0.4453125,
+            "labels": [
+              "HC",
+              "Asthma",
+              "Infected",
+              "COPD"
+            ],
+            "confusion_matrix": [
+              [
+                11,
+                6,
+                14,
+                1
+              ],
+              [
+                2,
+                8,
+                2,
+                4
+              ],
+              [
+                12,
+                2,
+                2,
+                0
+              ],
+              [
+                0,
+                3,
+                0,
+                13
+              ]
+            ],
+            "per_class": {
+              "HC": {
+                "precision": 0.44,
+                "recall": 0.34375,
+                "f1_score": 0.38596491228070173,
+                "support": 32,
+                "sensitivity": 0.34375,
+                "specificity": 0.7083333333333334,
+                "true_positive": 11,
+                "false_negative": 21,
+                "false_positive": 14,
+                "true_negative": 34
+              },
+              "Asthma": {
+                "precision": 0.42105263157894735,
+                "recall": 0.5,
+                "f1_score": 0.45714285714285713,
+                "support": 16,
+                "sensitivity": 0.5,
+                "specificity": 0.828125,
+                "true_positive": 8,
+                "false_negative": 8,
+                "false_positive": 11,
+                "true_negative": 53
+              },
+              "Infected": {
+                "precision": 0.1111111111111111,
+                "recall": 0.125,
+                "f1_score": 0.11764705882352941,
+                "support": 16,
+                "sensitivity": 0.125,
+                "specificity": 0.75,
+                "true_positive": 2,
+                "false_negative": 14,
+                "false_positive": 16,
+                "true_negative": 48
+              },
+              "COPD": {
+                "precision": 0.7222222222222222,
+                "recall": 0.8125,
+                "f1_score": 0.7647058823529411,
+                "support": 16,
+                "sensitivity": 0.8125,
+                "specificity": 0.921875,
+                "true_positive": 13,
+                "false_negative": 3,
+                "false_positive": 5,
+                "true_negative": 59
+              }
+            },
+            "log_loss": 1.5078118654239925,
+            "brier_score": 0.6227755773086432
+          }
+        },
+        "SVC": {
+          "cv_results": {
+            "cv_folds": 5,
+            "fold_scores": [
+              {
+                "fold": 1,
+                "macro_f1": 0.3731060606060606,
+                "balanced_accuracy": 0.4609375,
+                "accuracy": 0.55
+              },
+              {
+                "fold": 2,
+                "macro_f1": 0.44566544566544564,
+                "balanced_accuracy": 0.515625,
+                "accuracy": 0.6125
+              },
+              {
+                "fold": 3,
+                "macro_f1": 0.3725719074556284,
+                "balanced_accuracy": 0.4375,
+                "accuracy": 0.525
+              },
+              {
+                "fold": 4,
+                "macro_f1": 0.39641488779419815,
+                "balanced_accuracy": 0.4765625,
+                "accuracy": 0.575
+              },
+              {
+                "fold": 5,
+                "macro_f1": 0.37998994469582703,
+                "balanced_accuracy": 0.4578125,
+                "accuracy": 0.5443037974683544
+              }
+            ],
+            "cv_macro_f1_mean": 0.39354964924343194,
+            "cv_macro_f1_std": 0.027444990008967853,
+            "cv_balanced_acc_mean": 0.46968750000000004,
+            "cv_balanced_acc_std": 0.026119467117458578,
+            "cv_accuracy_mean": 0.5613607594936709,
+            "cv_accuracy_std": 0.030144194936724916,
+            "oof_metrics": {
+              "accuracy": 0.5614035087719298,
+              "balanced_accuracy": 0.4698773734177215,
+              "macro_f1": 0.39198718464014637,
+              "weighted_f1": 0.4492393619790647,
+              "macro_precision": 0.39516029497978955,
+              "macro_recall": 0.4698773734177215,
+              "labels": [
+                "HC",
+                "Asthma",
+                "Infected",
+                "COPD"
+              ],
+              "confusion_matrix": [
+                [
+                  149,
+                  5,
+                  0,
+                  6
+                ],
+                [
+                  46,
+                  7,
+                  0,
+                  27
+                ],
+                [
+                  75,
+                  2,
+                  0,
+                  3
+                ],
+                [
+                  7,
+                  4,
+                  0,
+                  68
+                ]
+              ],
+              "per_class": {
+                "HC": {
+                  "precision": 0.5379061371841155,
+                  "recall": 0.93125,
+                  "f1_score": 0.6819221967963387,
+                  "support": 160,
+                  "sensitivity": 0.93125,
+                  "specificity": 0.46443514644351463,
+                  "true_positive": 149,
+                  "false_negative": 11,
+                  "false_positive": 128,
+                  "true_negative": 111
+                },
+                "Asthma": {
+                  "precision": 0.3888888888888889,
+                  "recall": 0.0875,
+                  "f1_score": 0.14285714285714285,
+                  "support": 80,
+                  "sensitivity": 0.0875,
+                  "specificity": 0.9655172413793104,
+                  "true_positive": 7,
+                  "false_negative": 73,
+                  "false_positive": 11,
+                  "true_negative": 308
+                },
+                "Infected": {
+                  "precision": 0.0,
+                  "recall": 0.0,
+                  "f1_score": 0.0,
+                  "support": 80,
+                  "sensitivity": 0.0,
+                  "specificity": 1.0,
+                  "true_positive": 0,
+                  "false_negative": 80,
+                  "false_positive": 0,
+                  "true_negative": 319
+                },
+                "COPD": {
+                  "precision": 0.6538461538461539,
+                  "recall": 0.8607594936708861,
+                  "f1_score": 0.7431693989071039,
+                  "support": 79,
+                  "sensitivity": 0.8607594936708861,
+                  "specificity": 0.8875,
+                  "true_positive": 68,
+                  "false_negative": 11,
+                  "false_positive": 36,
+                  "true_negative": 284
+                }
+              },
+              "log_loss": 1.1152067719606487,
+              "brier_score": 0.6162106369305058
+            }
+          },
+          "held_out_test_results": {
+            "accuracy": 0.5375,
+            "balanced_accuracy": 0.4453125,
+            "macro_f1": 0.3393363584798639,
+            "weighted_f1": 0.40635280771412363,
+            "macro_precision": 0.2742592592592593,
+            "macro_recall": 0.4453125,
+            "labels": [
+              "HC",
+              "Asthma",
+              "Infected",
+              "COPD"
+            ],
+            "confusion_matrix": [
+              [
+                29,
+                1,
+                0,
+                2
+              ],
+              [
+                7,
+                0,
+                0,
+                9
+              ],
+              [
+                16,
+                0,
+                0,
+                0
+              ],
+              [
+                2,
+                0,
+                0,
+                14
+              ]
+            ],
+            "per_class": {
+              "HC": {
+                "precision": 0.5370370370370371,
+                "recall": 0.90625,
+                "f1_score": 0.6744186046511628,
+                "support": 32,
+                "sensitivity": 0.90625,
+                "specificity": 0.4791666666666667,
+                "true_positive": 29,
+                "false_negative": 3,
+                "false_positive": 25,
+                "true_negative": 23
+              },
+              "Asthma": {
+                "precision": 0.0,
+                "recall": 0.0,
+                "f1_score": 0.0,
+                "support": 16,
+                "sensitivity": 0.0,
+                "specificity": 0.984375,
+                "true_positive": 0,
+                "false_negative": 16,
+                "false_positive": 1,
+                "true_negative": 63
+              },
+              "Infected": {
+                "precision": 0.0,
+                "recall": 0.0,
+                "f1_score": 0.0,
+                "support": 16,
+                "sensitivity": 0.0,
+                "specificity": 1.0,
+                "true_positive": 0,
+                "false_negative": 16,
+                "false_positive": 0,
+                "true_negative": 64
+              },
+              "COPD": {
+                "precision": 0.56,
+                "recall": 0.875,
+                "f1_score": 0.6829268292682927,
+                "support": 16,
+                "sensitivity": 0.875,
+                "specificity": 0.828125,
+                "true_positive": 14,
+                "false_negative": 2,
+                "false_positive": 11,
+                "true_negative": 53
+              }
+            },
+            "log_loss": 1.084366215087909,
+            "brier_score": 0.5985037668934886
+          }
+        }
+      }
+    },
+    "biosensor_cohort": {
+      "description": "Complete biosensor cohort with 7 features (Demographics + Permittivity)",
+      "sample_count": 100,
+      "features": [
+        "Age",
+        "Gender",
+        "Smoking",
+        "Imaginary_Min",
+        "Imaginary_Avg",
+        "Real_Min",
+        "Real_Avg"
+      ],
+      "models": {
+        "LogisticRegression": {
+          "cv_results": {
+            "cv_folds": 5,
+            "fold_scores": [
+              {
+                "fold": 1,
+                "macro_f1": 0.5619588744588744,
+                "balanced_accuracy": 0.65625,
+                "accuracy": 0.6
+              },
+              {
+                "fold": 2,
+                "macro_f1": 0.48660714285714285,
+                "balanced_accuracy": 0.5625,
+                "accuracy": 0.6
+              },
+              {
+                "fold": 3,
+                "macro_f1": 0.4110576923076923,
+                "balanced_accuracy": 0.375,
+                "accuracy": 0.6
+              },
+              {
+                "fold": 4,
+                "macro_f1": 0.6958874458874458,
+                "balanced_accuracy": 0.84375,
+                "accuracy": 0.75
+              },
+              {
+                "fold": 5,
+                "macro_f1": 0.6519607843137255,
+                "balanced_accuracy": 0.71875,
+                "accuracy": 0.7
+              }
+            ],
+            "cv_macro_f1_mean": 0.5614943879649761,
+            "cv_macro_f1_std": 0.1043888667568599,
+            "cv_balanced_acc_mean": 0.63125,
+            "cv_balanced_acc_std": 0.15737097890017715,
+            "cv_accuracy_mean": 0.65,
+            "cv_accuracy_std": 0.0632455532033676,
+            "oof_metrics": {
+              "accuracy": 0.65,
+              "balanced_accuracy": 0.6312500000000001,
+              "macro_f1": 0.562718590260963,
+              "weighted_f1": 0.6646354587032554,
+              "macro_precision": 0.5896610521129135,
+              "macro_recall": 0.6312500000000001,
+              "labels": [
+                "HC",
+                "Asthma",
+                "Infected",
+                "COPD"
+              ],
+              "confusion_matrix": [
+                [
+                  17,
+                  8,
+                  12,
+                  3
+                ],
+                [
+                  2,
+                  4,
+                  2,
+                  2
+                ],
+                [
+                  0,
+                  2,
+                  8,
+                  0
+                ],
+                [
+                  0,
+                  4,
+                  0,
+                  36
+                ]
+              ],
+              "per_class": {
+                "HC": {
+                  "precision": 0.8947368421052632,
+                  "recall": 0.425,
+                  "f1_score": 0.576271186440678,
+                  "support": 40,
+                  "sensitivity": 0.425,
+                  "specificity": 0.9666666666666667,
+                  "true_positive": 17,
+                  "false_negative": 23,
+                  "false_positive": 2,
+                  "true_negative": 58
+                },
+                "Asthma": {
+                  "precision": 0.2222222222222222,
+                  "recall": 0.4,
+                  "f1_score": 0.2857142857142857,
+                  "support": 10,
+                  "sensitivity": 0.4,
+                  "specificity": 0.8444444444444444,
+                  "true_positive": 4,
+                  "false_negative": 6,
+                  "false_positive": 14,
+                  "true_negative": 76
+                },
+                "Infected": {
+                  "precision": 0.36363636363636365,
+                  "recall": 0.8,
+                  "f1_score": 0.5,
+                  "support": 10,
+                  "sensitivity": 0.8,
+                  "specificity": 0.8444444444444444,
+                  "true_positive": 8,
+                  "false_negative": 2,
+                  "false_positive": 14,
+                  "true_negative": 76
+                },
+                "COPD": {
+                  "precision": 0.8780487804878049,
+                  "recall": 0.9,
+                  "f1_score": 0.8888888888888888,
+                  "support": 40,
+                  "sensitivity": 0.9,
+                  "specificity": 0.9166666666666666,
+                  "true_positive": 36,
+                  "false_negative": 4,
+                  "false_positive": 5,
+                  "true_negative": 55
+                }
+              },
+              "log_loss": 0.8682421313220263,
+              "brier_score": 0.4638792862251805
+            }
+          },
+          "held_out_test_results": {
+            "accuracy": 0.6,
+            "balanced_accuracy": 0.65625,
+            "macro_f1": 0.5619588744588744,
+            "weighted_f1": 0.6134199134199134,
+            "macro_precision": 0.6125,
+            "macro_recall": 0.65625,
+            "labels": [
+              "HC",
+              "Asthma",
+              "Infected",
+              "COPD"
+            ],
+            "confusion_matrix": [
+              [
+                3,
+                2,
+                1,
+                2
+              ],
+              [
+                0,
+                1,
+                1,
+                0
+              ],
+              [
+                0,
+                0,
+                2,
+                0
+              ],
+              [
+                0,
+                2,
+                0,
+                6
+              ]
+            ],
+            "per_class": {
+              "HC": {
+                "precision": 1.0,
+                "recall": 0.375,
+                "f1_score": 0.5454545454545454,
+                "support": 8,
+                "sensitivity": 0.375,
+                "specificity": 1.0,
+                "true_positive": 3,
+                "false_negative": 5,
+                "false_positive": 0,
+                "true_negative": 12
+              },
+              "Asthma": {
+                "precision": 0.2,
+                "recall": 0.5,
+                "f1_score": 0.2857142857142857,
+                "support": 2,
+                "sensitivity": 0.5,
+                "specificity": 0.7777777777777778,
+                "true_positive": 1,
+                "false_negative": 1,
+                "false_positive": 4,
+                "true_negative": 14
+              },
+              "Infected": {
+                "precision": 0.5,
+                "recall": 1.0,
+                "f1_score": 0.6666666666666666,
+                "support": 2,
+                "sensitivity": 1.0,
+                "specificity": 0.8888888888888888,
+                "true_positive": 2,
+                "false_negative": 0,
+                "false_positive": 2,
+                "true_negative": 16
+              },
+              "COPD": {
+                "precision": 0.75,
+                "recall": 0.75,
+                "f1_score": 0.75,
+                "support": 8,
+                "sensitivity": 0.75,
+                "specificity": 0.8333333333333334,
+                "true_positive": 6,
+                "false_negative": 2,
+                "false_positive": 2,
+                "true_negative": 10
+              }
+            },
+            "log_loss": 1.198512020648667,
+            "brier_score": 0.6520101206569995
+          }
+        },
+        "RandomForest": {
+          "cv_results": {
+            "cv_folds": 5,
+            "fold_scores": [
+              {
+                "fold": 1,
+                "macro_f1": 0.7475490196078431,
+                "balanced_accuracy": 0.75,
+                "accuracy": 0.75
+              },
+              {
+                "fold": 2,
+                "macro_f1": 0.669047619047619,
+                "balanced_accuracy": 0.6875,
+                "accuracy": 0.65
+              },
+              {
+                "fold": 3,
+                "macro_f1": 0.7743055555555555,
+                "balanced_accuracy": 0.71875,
+                "accuracy": 0.85
+              },
+              {
+                "fold": 4,
+                "macro_f1": 0.7457107843137255,
+                "balanced_accuracy": 0.71875,
+                "accuracy": 0.85
+              },
+              {
+                "fold": 5,
+                "macro_f1": 0.5983893557422969,
+                "balanced_accuracy": 0.625,
+                "accuracy": 0.7
+              }
+            ],
+            "cv_macro_f1_mean": 0.707000466853408,
+            "cv_macro_f1_std": 0.06466752026623754,
+            "cv_balanced_acc_mean": 0.7,
+            "cv_balanced_acc_std": 0.042389562394532926,
+            "cv_accuracy_mean": 0.76,
+            "cv_accuracy_std": 0.07999999999999999,
+            "oof_metrics": {
+              "accuracy": 0.76,
+              "balanced_accuracy": 0.7,
+              "macro_f1": 0.686735778841042,
+              "weighted_f1": 0.7624136097820309,
+              "macro_precision": 0.6772142153239714,
+              "macro_recall": 0.7,
+              "labels": [
+                "HC",
+                "Asthma",
+                "Infected",
+                "COPD"
+              ],
+              "confusion_matrix": [
+                [
+                  28,
+                  6,
+                  3,
+                  3
+                ],
+                [
+                  2,
+                  5,
+                  1,
+                  2
+                ],
+                [
+                  2,
+                  1,
+                  7,
+                  0
+                ],
+                [
+                  4,
+                  0,
+                  0,
+                  36
+                ]
+              ],
+              "per_class": {
+                "HC": {
+                  "precision": 0.7777777777777778,
+                  "recall": 0.7,
+                  "f1_score": 0.7368421052631579,
+                  "support": 40,
+                  "sensitivity": 0.7,
+                  "specificity": 0.8666666666666667,
+                  "true_positive": 28,
+                  "false_negative": 12,
+                  "false_positive": 8,
+                  "true_negative": 52
+                },
+                "Asthma": {
+                  "precision": 0.4166666666666667,
+                  "recall": 0.5,
+                  "f1_score": 0.45454545454545453,
+                  "support": 10,
+                  "sensitivity": 0.5,
+                  "specificity": 0.9222222222222223,
+                  "true_positive": 5,
+                  "false_negative": 5,
+                  "false_positive": 7,
+                  "true_negative": 83
+                },
+                "Infected": {
+                  "precision": 0.6363636363636364,
+                  "recall": 0.7,
+                  "f1_score": 0.6666666666666666,
+                  "support": 10,
+                  "sensitivity": 0.7,
+                  "specificity": 0.9555555555555556,
+                  "true_positive": 7,
+                  "false_negative": 3,
+                  "false_positive": 4,
+                  "true_negative": 86
+                },
+                "COPD": {
+                  "precision": 0.8780487804878049,
+                  "recall": 0.9,
+                  "f1_score": 0.8888888888888888,
+                  "support": 40,
+                  "sensitivity": 0.9,
+                  "specificity": 0.9166666666666666,
+                  "true_positive": 36,
+                  "false_negative": 4,
+                  "false_positive": 5,
+                  "true_negative": 55
+                }
+              },
+              "log_loss": 0.6681956408696702,
+              "brier_score": 0.34174648770695754
+            }
+          },
+          "held_out_test_results": {
+            "accuracy": 0.6,
+            "balanced_accuracy": 0.46875,
+            "macro_f1": 0.46875,
+            "weighted_f1": 0.6,
+            "macro_precision": 0.46875,
+            "macro_recall": 0.46875,
+            "labels": [
+              "HC",
+              "Asthma",
+              "Infected",
+              "COPD"
+            ],
+            "confusion_matrix": [
+              [
+                5,
+                0,
+                1,
+                2
+              ],
+              [
+                0,
+                1,
+                1,
+                0
+              ],
+              [
+                2,
+                0,
+                0,
+                0
+              ],
+              [
+                1,
+                1,
+                0,
+                6
+              ]
+            ],
+            "per_class": {
+              "HC": {
+                "precision": 0.625,
+                "recall": 0.625,
+                "f1_score": 0.625,
+                "support": 8,
+                "sensitivity": 0.625,
+                "specificity": 0.75,
+                "true_positive": 5,
+                "false_negative": 3,
+                "false_positive": 3,
+                "true_negative": 9
+              },
+              "Asthma": {
+                "precision": 0.5,
+                "recall": 0.5,
+                "f1_score": 0.5,
+                "support": 2,
+                "sensitivity": 0.5,
+                "specificity": 0.9444444444444444,
+                "true_positive": 1,
+                "false_negative": 1,
+                "false_positive": 1,
+                "true_negative": 17
+              },
+              "Infected": {
+                "precision": 0.0,
+                "recall": 0.0,
+                "f1_score": 0.0,
+                "support": 2,
+                "sensitivity": 0.0,
+                "specificity": 0.8888888888888888,
+                "true_positive": 0,
+                "false_negative": 2,
+                "false_positive": 2,
+                "true_negative": 16
+              },
+              "COPD": {
+                "precision": 0.75,
+                "recall": 0.75,
+                "f1_score": 0.75,
+                "support": 8,
+                "sensitivity": 0.75,
+                "specificity": 0.8333333333333334,
+                "true_positive": 6,
+                "false_negative": 2,
+                "false_positive": 2,
+                "true_negative": 10
+              }
+            },
+            "log_loss": 0.9051082565119752,
+            "brier_score": 0.4843138968793615
+          }
+        },
+        "SVC": {
+          "cv_results": {
+            "cv_folds": 5,
+            "fold_scores": [
+              {
+                "fold": 1,
+                "macro_f1": 0.3375,
+                "balanced_accuracy": 0.375,
+                "accuracy": 0.6
+              },
+              {
+                "fold": 2,
+                "macro_f1": 0.4238095238095238,
+                "balanced_accuracy": 0.46875,
+                "accuracy": 0.75
+              },
+              {
+                "fold": 3,
+                "macro_f1": 0.41875,
+                "balanced_accuracy": 0.46875,
+                "accuracy": 0.75
+              },
+              {
+                "fold": 4,
+                "macro_f1": 0.5347222222222222,
+                "balanced_accuracy": 0.5625,
+                "accuracy": 0.75
+              },
+              {
+                "fold": 5,
+                "macro_f1": 0.41666666666666663,
+                "balanced_accuracy": 0.46875,
+                "accuracy": 0.75
+              }
+            ],
+            "cv_macro_f1_mean": 0.4262896825396825,
+            "cv_macro_f1_std": 0.06292348340980723,
+            "cv_balanced_acc_mean": 0.46875,
+            "cv_balanced_acc_std": 0.05929270612815711,
+            "cv_accuracy_mean": 0.72,
+            "cv_accuracy_std": 0.06000000000000001,
+            "oof_metrics": {
+              "accuracy": 0.72,
+              "balanced_accuracy": 0.46875,
+              "macro_f1": 0.4427446628619742,
+              "weighted_f1": 0.6583914605791586,
+              "macro_precision": 0.49339323467230445,
+              "macro_recall": 0.46875,
+              "labels": [
+                "HC",
+                "Asthma",
+                "Infected",
+                "COPD"
+              ],
+              "confusion_matrix": [
+                [
+                  35,
+                  0,
+                  1,
+                  4
+                ],
+                [
+                  7,
+                  0,
+                  0,
+                  3
+                ],
+                [
+                  9,
+                  0,
+                  1,
+                  0
+                ],
+                [
+                  4,
+                  0,
+                  0,
+                  36
+                ]
+              ],
+              "per_class": {
+                "HC": {
+                  "precision": 0.6363636363636364,
+                  "recall": 0.875,
+                  "f1_score": 0.7368421052631579,
+                  "support": 40,
+                  "sensitivity": 0.875,
+                  "specificity": 0.6666666666666666,
+                  "true_positive": 35,
+                  "false_negative": 5,
+                  "false_positive": 20,
+                  "true_negative": 40
+                },
+                "Asthma": {
+                  "precision": 0.0,
+                  "recall": 0.0,
+                  "f1_score": 0.0,
+                  "support": 10,
+                  "sensitivity": 0.0,
+                  "specificity": 1.0,
+                  "true_positive": 0,
+                  "false_negative": 10,
+                  "false_positive": 0,
+                  "true_negative": 90
+                },
+                "Infected": {
+                  "precision": 0.5,
+                  "recall": 0.1,
+                  "f1_score": 0.16666666666666666,
+                  "support": 10,
+                  "sensitivity": 0.1,
+                  "specificity": 0.9888888888888889,
+                  "true_positive": 1,
+                  "false_negative": 9,
+                  "false_positive": 1,
+                  "true_negative": 89
+                },
+                "COPD": {
+                  "precision": 0.8372093023255814,
+                  "recall": 0.9,
+                  "f1_score": 0.8674698795180723,
+                  "support": 40,
+                  "sensitivity": 0.9,
+                  "specificity": 0.8833333333333333,
+                  "true_positive": 36,
+                  "false_negative": 4,
+                  "false_positive": 7,
+                  "true_negative": 53
+                }
+              },
+              "log_loss": 0.8709517512128915,
+              "brier_score": 0.469677302020734
+            }
+          },
+          "held_out_test_results": {
+            "accuracy": 0.55,
+            "balanced_accuracy": 0.34375,
+            "macro_f1": 0.3080495356037152,
+            "weighted_f1": 0.49287925696594426,
+            "macro_precision": 0.2803030303030303,
+            "macro_recall": 0.34375,
+            "labels": [
+              "HC",
+              "Asthma",
+              "Infected",
+              "COPD"
+            ],
+            "confusion_matrix": [
+              [
+                5,
+                0,
+                0,
+                3
+              ],
+              [
+                2,
+                0,
+                0,
+                0
+              ],
+              [
+                2,
+                0,
+                0,
+                0
+              ],
+              [
+                2,
+                0,
+                0,
+                6
+              ]
+            ],
+            "per_class": {
+              "HC": {
+                "precision": 0.45454545454545453,
+                "recall": 0.625,
+                "f1_score": 0.5263157894736842,
+                "support": 8,
+                "sensitivity": 0.625,
+                "specificity": 0.5,
+                "true_positive": 5,
+                "false_negative": 3,
+                "false_positive": 6,
+                "true_negative": 6
+              },
+              "Asthma": {
+                "precision": 0.0,
+                "recall": 0.0,
+                "f1_score": 0.0,
+                "support": 2,
+                "sensitivity": 0.0,
+                "specificity": 1.0,
+                "true_positive": 0,
+                "false_negative": 2,
+                "false_positive": 0,
+                "true_negative": 18
+              },
+              "Infected": {
+                "precision": 0.0,
+                "recall": 0.0,
+                "f1_score": 0.0,
+                "support": 2,
+                "sensitivity": 0.0,
+                "specificity": 1.0,
+                "true_positive": 0,
+                "false_negative": 2,
+                "false_positive": 0,
+                "true_negative": 18
+              },
+              "COPD": {
+                "precision": 0.6666666666666666,
+                "recall": 0.75,
+                "f1_score": 0.7058823529411765,
+                "support": 8,
+                "sensitivity": 0.75,
+                "specificity": 0.75,
+                "true_positive": 6,
+                "false_negative": 2,
+                "false_positive": 3,
+                "true_negative": 9
+              }
+            },
+            "log_loss": 0.9366793827885612,
+            "brier_score": 0.5144473112205723
+          }
+        }
+      }
+    }
+  }
+}

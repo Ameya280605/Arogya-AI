@@ -1,0 +1,290 @@
+/* ==============================================================================
+   Arogya AI — Landing Page Styles (Module 4, Phase 4.3)
+   Adapted for the shared AppShell layout and PageContainer.
+   Consumes semantic design tokens for clinical clarity and precision.
+   ============================================================================== */
+
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-10);
+}
+
+/* -----------------------------------------------------------------------------
+   Stage Badge
+   ----------------------------------------------------------------------------- */
+.stageBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-1) var(--space-3);
+  font-size: var(--font-size-body-sm);
+  font-weight: var(--font-weight-medium);
+  border-radius: var(--radius-full);
+  background-color: var(--color-brand-subtle);
+  color: var(--color-brand-fg);
+  border: var(--border-width-sm) solid var(--color-brand-border);
+}
+
+.stageDot {
+  width: 7px;
+  height: 7px;
+  border-radius: var(--radius-full);
+  background-color: var(--color-brand-primary);
+}
+
+/* -----------------------------------------------------------------------------
+   Clinical Safety & Research Disclaimer Callout
+   ----------------------------------------------------------------------------- */
+.disclaimerBox {
+  border: var(--border-width-sm) solid var(--color-warning-border);
+  background-color: var(--color-warning-bg);
+  border-radius: var(--radius-lg);
+  padding: var(--space-6);
+  display: flex;
+  gap: var(--space-4);
+  align-items: flex-start;
+  box-shadow: var(--shadow-sm);
+}
+
+.disclaimerIcon {
+  color: var(--color-warning-icon);
+  flex-shrink: 0;
+  margin-top: var(--space-1);
+}
+
+.disclaimerBody {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.disclaimerTitle {
+  font-size: var(--font-size-body-sm);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-warning-fg);
+  letter-spacing: var(--letter-spacing-wider);
+  text-transform: uppercase;
+}
+
+.disclaimerText {
+  font-size: var(--font-size-body);
+  line-height: var(--line-height-base);
+  color: var(--color-warning-fg);
+}
+
+/* -----------------------------------------------------------------------------
+   Section Headings
+   ----------------------------------------------------------------------------- */
+.sectionHeading {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  margin-bottom: var(--space-6);
+}
+
+.sectionTitle {
+  font-size: var(--font-size-h2);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
+}
+
+.sectionSubtitle {
+  font-size: var(--font-size-body);
+  color: var(--color-text-muted);
+}
+
+/* -----------------------------------------------------------------------------
+   Architecture Research Pillars Grid
+   ----------------------------------------------------------------------------- */
+.pillarsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: var(--space-6);
+}
+
+.pillarCard {
+  background-color: var(--color-bg-surface);
+  border: var(--border-width-sm) solid var(--color-border-subtle);
+  border-radius: var(--radius-lg);
+  padding: var(--space-6);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  box-shadow: var(--shadow-sm);
+  transition: transform var(--motion-duration-fast) var(--motion-easing-default),
+              box-shadow var(--motion-duration-fast) var(--motion-easing-default),
+              border-color var(--motion-duration-fast) var(--motion-easing-default);
+}
+
+.pillarCard:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+  border-color: var(--color-border-default);
+}
+
+.pillarIconContainer {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-md);
+  background-color: var(--color-brand-subtle);
+  color: var(--color-brand-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pillarTitle {
+  font-size: var(--font-size-h3);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+}
+
+.pillarDescription {
+  font-size: var(--font-size-body);
+  line-height: var(--line-height-base);
+  color: var(--color-text-secondary);
+}
+
+/* -----------------------------------------------------------------------------
+   Technical Foundation & Status Badges Showcase
+   ----------------------------------------------------------------------------- */
+.specCard {
+  background-color: var(--color-bg-surface);
+  border: var(--border-width-sm) solid var(--color-border-subtle);
+  border-radius: var(--radius-lg);
+  padding: var(--space-6);
+  box-shadow: var(--shadow-sm);
+}
+
+.specHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+}
+
+.statusTags {
+  display: flex;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+
+.badgeSuccess {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--space-1) var(--space-3);
+  font-size: var(--font-size-caption);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: var(--letter-spacing-wide);
+  border-radius: var(--radius-full);
+  background-color: var(--color-success-bg);
+  color: var(--color-success-fg);
+  border: var(--border-width-sm) solid var(--color-success-border);
+}
+
+.badgeInfo {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--space-1) var(--space-3);
+  font-size: var(--font-size-caption);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: var(--letter-spacing-wide);
+  border-radius: var(--radius-full);
+  background-color: var(--color-info-bg);
+  color: var(--color-info-fg);
+  border: var(--border-width-sm) solid var(--color-info-border);
+}
+
+.specGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: var(--space-4);
+  margin-top: var(--space-6);
+}
+
+.specItem {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  padding: var(--space-4);
+  background-color: var(--color-bg-surface-subtle);
+  border-radius: var(--radius-md);
+  border: var(--border-width-sm) solid var(--color-border-subtle);
+}
+
+.specLabel {
+  font-size: var(--font-size-caption);
+  font-weight: var(--font-weight-semibold);
+  text-transform: uppercase;
+  letter-spacing: var(--letter-spacing-wider);
+  color: var(--color-text-muted);
+}
+
+.specValue {
+  font-size: var(--font-size-body);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  font-family: var(--font-mono);
+}
+
+/* -----------------------------------------------------------------------------
+   Landing Page Footer
+   ----------------------------------------------------------------------------- */
+.footer {
+  border-top: var(--border-width-sm) solid var(--color-border-subtle);
+  padding: var(--space-6) 0;
+  margin-top: var(--space-4);
+}
+
+.footerInner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  text-align: center;
+}
+
+.footerText {
+  font-size: var(--font-size-body-sm);
+  color: var(--color-text-muted);
+}
+
+.footerNotice {
+  font-size: var(--font-size-caption);
+  color: var(--color-text-muted);
+  font-style: italic;
+}
+
+/* -----------------------------------------------------------------------------
+   Dashboard Metrics Summary Grid
+   ----------------------------------------------------------------------------- */
+.cardsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: var(--space-5);
+}
+
+/* -----------------------------------------------------------------------------
+   Responsive Breakpoints
+   ----------------------------------------------------------------------------- */
+@media (max-width: 768px) {
+  .disclaimerBox {
+    flex-direction: column;
+    padding: var(--space-4);
+  }
+
+  .pillarsGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .cardsGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .specGrid {
+    grid-template-columns: 1fr;
+  }
+}

@@ -1,0 +1,42 @@
+/* ==============================================================================
+   Arogya AI — Skeleton Primitive Styles
+   Consumes semantic design tokens for accessible loading states.
+   ============================================================================== */
+
+.skeleton {
+  background-color: var(--color-bg-surface-muted);
+  border-radius: var(--radius-md);
+  position: relative;
+  overflow: hidden;
+  animation: pulse 1.6s ease-in-out infinite;
+}
+
+.circular {
+  border-radius: var(--radius-full);
+}
+
+.text {
+  height: 1em;
+  margin-top: 0.25em;
+  margin-bottom: 0.25em;
+  border-radius: var(--radius-xs);
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.6;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skeleton {
+    animation: none;
+    opacity: 0.8;
+  }
+}

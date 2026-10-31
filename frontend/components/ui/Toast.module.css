@@ -1,0 +1,125 @@
+/* ==============================================================================
+   Arogya AI — Toast Primitive Styles
+   Consumes semantic design tokens for accessible notifications and alerts.
+   ============================================================================== */
+
+.toast {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  border-radius: var(--radius-md);
+  border: var(--border-width-sm) solid var(--color-border-subtle);
+  background-color: var(--color-bg-surface);
+  box-shadow: var(--shadow-md);
+  max-width: 440px;
+  width: 100%;
+  font-family: var(--font-sans);
+}
+
+.content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.title {
+  font-size: var(--font-size-body-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  line-height: var(--line-height-tight);
+}
+
+.description {
+  font-size: var(--font-size-body-sm);
+  color: var(--color-text-secondary);
+  line-height: var(--line-height-base);
+}
+
+.icon {
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.closeButton {
+  background: transparent;
+  border: none;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  padding: var(--space-1);
+  border-radius: var(--radius-xs);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.closeButton:hover {
+  background-color: var(--color-bg-surface-subtle);
+  color: var(--color-text-primary);
+}
+
+.closeButton:focus-visible {
+  outline: var(--focus-ring-width) solid var(--color-focus-ring);
+  outline-offset: var(--focus-ring-offset);
+}
+
+/* -----------------------------------------------------------------------------
+   Variants
+   ----------------------------------------------------------------------------- */
+.neutral {
+  border-color: var(--color-border-default);
+}
+
+.info {
+  background-color: var(--color-info-bg);
+  border-color: var(--color-info-border);
+}
+
+.info .title {
+  color: var(--color-info-fg);
+}
+
+.info .icon {
+  color: var(--color-info-icon);
+}
+
+.success {
+  background-color: var(--color-success-bg);
+  border-color: var(--color-success-border);
+}
+
+.success .title {
+  color: var(--color-success-fg);
+}
+
+.success .icon {
+  color: var(--color-success-icon);
+}
+
+.warning {
+  background-color: var(--color-warning-bg);
+  border-color: var(--color-warning-border);
+}
+
+.warning .title {
+  color: var(--color-warning-fg);
+}
+
+.warning .icon {
+  color: var(--color-warning-icon);
+}
+
+.danger {
+  background-color: var(--color-danger-bg);
+  border-color: var(--color-danger-border);
+}
+
+.danger .title {
+  color: var(--color-danger-fg);
+}
+
+.danger .icon {
+  color: var(--color-danger-icon);
+}
