@@ -114,5 +114,5 @@ COPD               2         0         0         6
    power (Macro-F1 ~0.35–0.40) because healthy smokers and elderly controls overlap heavily with clinical populations.
 3. **Sensor Feature Signal**: The addition of physical saliva permittivity measurements (Imaginary & Real dielectric values)
    markedly elevates multi-class separation, with Random Forest achieving ~0.71–0.72 CV Macro-F1.
-4. **No Premature Model Artifacts**: Model weights (`.joblib`) are not saved in Phase 2, strictly preserving separation
-   between exploratory benchmarking and production artifact deployment.
+4. **Model Deployment Limitations**: The serialized Random Forest is a research baseline, not a clinically
+validated production diagnostic model. Its artifact is intended for controlled research and integration testing.

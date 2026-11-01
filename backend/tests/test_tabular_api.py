@@ -1,3 +1,4 @@
+from fastapi import HTTPException
 """Arogya AI — Tabular ML API Integration & Regression Tests.
 
 Module 9: Tabular ML Baseline Classification & Biosensor Risk Modeling.
@@ -325,3 +326,57 @@ def test_get_tabular_model_info_endpoint(client: TestClient):
     assert "sha256_checksum" in meta
     assert len(meta["sha256_checksum"]) == 64
     assert "RESEARCH PROTOTYPE ONLY" in meta["disclaimer"]
+
+
+@pytest.mark.unit
+def test_tabular_analysis_forbidden_without_analysis_permission(
+    client: TestClient,
+    sample_patient: Patient,
+):
+    """Verify actual RBAC denies analysis to a user without permissions."""
+
+    unprivileged_user = User(
+        id=uuid.uuid4(),
+        username="unprivileged_tabular",
+        email="unprivileged_tabular@example.com",
+        full_name="Unprivileged User",
+        is_active=True,
+        roles=[Role(id=uuid.uuid4(), name="unprivileged")],
+    )
+
+    client.app.dependency_overrides[get_current_user] = (
+        lambda: unprivileged_user
+    )
+
+    response = client.post(
+        f"/api/v1/patients/{sample_patient.id}/analysis/tabular",
+        json={"age": 50, "gender": 1, "smoking": 1},
+    )
+
+    assert response.status_code == 403
+    assert "Insufficient permissions" in str(response.json())
+
+
+@pytest.mark.unit
+def test_tabular_model_metadata_forbidden_without_analysis_permission(
+    client: TestClient,
+):
+    """Verify actual RBAC denies model metadata to a user without permissions."""
+
+    unprivileged_user = User(
+        id=uuid.uuid4(),
+        username="unprivileged_metadata",
+        email="unprivileged_metadata@example.com",
+        full_name="Unprivileged User",
+        is_active=True,
+        roles=[Role(id=uuid.uuid4(), name="unprivileged")],
+    )
+
+    client.app.dependency_overrides[get_current_user] = (
+        lambda: unprivileged_user
+    )
+
+    response = client.get("/api/v1/analysis/models/tabular")
+
+    assert response.status_code == 403
+    assert "Insufficient permissions" in str(response.json())
