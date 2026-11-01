@@ -194,3 +194,6 @@ run/
 
 # Include the Tabular ML baseline model
 !ml/tabular/artifacts/tabular_baseline.joblib
+
+# Module 10 - downloaded chest X-ray dataset
+ml/imaging/data/
