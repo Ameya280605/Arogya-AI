@@ -2,8 +2,8 @@
 
 This directory contains the Next.js web application for the Arogya AI clinical decision-support and healthcare intelligence research prototype.
 
-> **Status:** Module 6 (Patient Intelligence) Complete.<br/>
-> Implemented complete database-backed Patient Intelligence interface across all seven canonical phases: 6.1 Patient List (search, biological sex and cohort stratification, pagination, empty states), 6.2 Patient CRUD (schema-validated registration, profile viewing, and demographic editing), 6.3 Patient Profile (tabs for Overview, Encounters, Observations, Analysis Runs, and Longitudinal Timeline), 6.4 Encounters (creation, status lifecycle, cross-entity observation/analysis linkage), 6.5 Data Quality (completeness scoring and unit/physiological bound consistency checks), 6.6 API Integration (FastAPI REST endpoints and typed client), and 6.7 End-to-End Testing (138 automated frontend unit tests across 33 test suites, zero TypeScript errors, zero ESLint warnings, and verified production static build).
+> **Status:** Module 6 (Patient Intelligence) complete; Module 10 chest X-ray inference connected to the research UI.<br/>
+> The `/imaging` workspace supports authenticated patient and uploaded PNG/JPEG selection, inference submission, raw score display, optional Grad-CAM generation and heatmap retrieval, and research-only disclosures.
 
 
 
@@ -47,7 +47,7 @@ All commands are executed from the `frontend/` directory:
 | `npm run start` | Production Server | Runs the compiled production server on port 3000. |
 | `npm run lint` | ESLint | Executes ESLint against all source files using Next.js core web vitals and TypeScript rules. |
 | `npm run type-check` | TypeScript Check | Runs `tsc --noEmit` to verify type safety without emitting build artifacts. |
-| `npm run test` | Automated Tests | Executes 138 component, state, dashboard, filter, visualization, patient intelligence, API client, and end-to-end workflow unit tests across 33 suites using `node:test` and `tsx`. |
+| `npm run test` | Automated Tests | Executes 148 frontend unit and route tests using `node:test` and `tsx` (last verified 2026-11-02). |
 
 ---
 
@@ -296,8 +296,10 @@ Frontend configuration is driven by environment variables using Next.js conventi
 
 | Variable | Type | Default | Description |
 | :--- | :--- | :--- | :--- |
-| `NEXT_PUBLIC_API_URL` | URL | `http://127.0.0.1:8000/api/v1` | Base endpoint URL for the backend FastAPI service. |
-| `NEXT_PUBLIC_APP_ENV` | String | `development` | Active environment profile (`development`, `staging`, `production`). |
+| `NEXT_PUBLIC_API_URL` | URL | `http://127.0.0.1:8000/api/v1` | Public base URL for the backend FastAPI service, including its API prefix. Set it before `npm run build`; Next.js embeds `NEXT_PUBLIC_*` values in browser code. |
+| `NEXT_PUBLIC_APP_ENV` | String | `development` | Present in the template but currently not consumed by the frontend imaging client. |
+
+The `/imaging` page sends authenticated requests to the configured backend and operates on images already uploaded there. It requires the backend's patient/asset read permissions and `analysis:read` permission. The API URL must be reachable from the user's browser, not only from the frontend build server. The backend currently allows only local development CORS origins; a separately hosted frontend requires a backend CORS allowlist update or a same-origin reverse proxy. `FRONTEND_URL` in the repository-root `.env.example` does not configure backend CORS.
 
 ---
 

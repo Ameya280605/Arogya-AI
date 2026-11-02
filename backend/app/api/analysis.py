@@ -21,6 +21,7 @@ from backend.app.db.session import get_db
 from backend.app.errors import ErrorResponse
 from backend.app.schemas.analysis import AnalysisRunResponse, TabularInferenceRequest
 from backend.app.security.dependencies import require_permission
+from backend.app.security.patient_access import require_patient_access
 from backend.app.security.roles import Permission
 from backend.app.services.exceptions import ConsistencyError, EntityNotFoundError
 from backend.app.services.tabular_ml import TabularMLService, get_tabular_predictor
@@ -56,6 +57,7 @@ def execute_tabular_analysis(
     session: Session = Depends(get_db),
 ) -> AnalysisRunResponse:
     """Execute research tabular classification for a patient record."""
+    require_patient_access(session, current_user, patient_id)
     service = TabularMLService(session)
 
     try:
@@ -107,4 +109,3 @@ def get_tabular_model_info(
     """Retrieve metadata, features, and research disclaimers for the active tabular model."""
     predictor = get_tabular_predictor()
     return predictor.metadata
-

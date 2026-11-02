@@ -133,7 +133,7 @@ describe("Sidebar Navigation & Active Route Behavior", () => {
 describe("Planned Route Content & Disclaimer Integrity", () => {
   const allRoutes = [
     { route: "security", file: "../app/security/page.tsx", moduleNum: 7, isPlannedState: true },
-    { route: "imaging", file: "../app/imaging/page.tsx", moduleNum: 10, isPlannedState: true },
+    { route: "imaging", file: "../app/imaging/page.tsx", moduleNum: 10, isPlannedState: false },
     { route: "agents", file: "../app/agents/page.tsx", moduleNum: 11, isPlannedState: true },
     { route: "knowledge", file: "../app/knowledge/page.tsx", moduleNum: 12, isPlannedState: true },
     { route: "safety", file: "../app/safety/page.tsx", moduleNum: 13, isPlannedState: true },
@@ -177,6 +177,15 @@ describe("Planned Route Content & Disclaimer Integrity", () => {
       );
     });
   }
+
+  it("renders the imaging sign-in gate and research disclaimer", async () => {
+    const mod = await import("../app/imaging/page");
+    const html = renderToStaticMarkup(<mod.default />);
+
+    assert.ok(html.includes("Sign in to analyze imaging"));
+    assert.ok(html.includes("Research use only"));
+    assert.ok(html.includes("Module 10: Research workflow"));
+  });
 
   it("verifies /research clearly explains its relationship to both AI Research Lab (M18) and Tabular ML Research (M9)", async () => {
     const mod = await import("../app/research/page");

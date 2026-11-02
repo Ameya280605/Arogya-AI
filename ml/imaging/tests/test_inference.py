@@ -3,6 +3,7 @@
 import numpy as np
 import pytest
 import torch
+import torchxrayvision as xrv
 from PIL import Image
 
 from ml.imaging.src.inference import (
@@ -33,6 +34,24 @@ def test_preprocess_returns_expected_shape(valid_image):
     assert isinstance(tensor, torch.Tensor)
     assert tuple(tensor.shape) == (1, 1, 224, 224)
     assert torch.isfinite(tensor).all()
+
+def test_checkpoint_path_uses_cache_metadata_without_loading_model(
+    monkeypatch, tmp_path
+):
+    checkpoint_name = "nih-checkpoint.pt"
+    monkeypatch.setattr(xrv.utils, "get_cache_dir", lambda: str(tmp_path))
+    monkeypatch.setitem(
+        xrv.models.model_urls,
+        ChestXrayInference.MODEL_WEIGHTS,
+        {"weights_url": f"https://models.invalid/{checkpoint_name}"},
+    )
+    monkeypatch.setattr(
+        xrv.models,
+        "DenseNet",
+        lambda **kwargs: pytest.fail("checkpoint lookup must not load weights"),
+    )
+
+    assert ChestXrayInference.checkpoint_path() == tmp_path / checkpoint_name
 
 def test_rejects_unsupported_format(tmp_path):
     path = tmp_path / "image.gif"
@@ -104,4 +123,3 @@ def test_model_inference_failure_is_reported(pipeline, valid_image, monkeypatch)
 
     with pytest.raises(RuntimeError, match="inference failed"):
         pipeline.predict(valid_image)
-

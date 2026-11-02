@@ -23,7 +23,7 @@ from sqlalchemy.orm import Session, sessionmaker
 from sqlalchemy.pool import StaticPool
 
 from backend.app.db import Base, get_db
-from backend.app.db.models import Encounter, Patient, Role, User
+from backend.app.db.models import Encounter, Patient, Role, User, patient_access
 from backend.app.main import create_app
 from backend.app.schemas.analysis import AnalysisRunResponse
 from backend.app.security.dependencies import get_current_user
@@ -88,7 +88,7 @@ def client(test_engine, session_factory, test_user) -> Generator[TestClient, Non
 
 
 @pytest.fixture
-def sample_patient(session_factory) -> Patient:
+def sample_patient(session_factory, test_user) -> Patient:
     """Persist and return a synthetic patient for analysis runs."""
     session = session_factory()
     patient = Patient(
@@ -99,6 +99,14 @@ def sample_patient(session_factory) -> Patient:
         is_synthetic=True,
     )
     session.add(patient)
+    session.commit()
+    session.execute(
+        patient_access.insert().values(
+            patient_id=patient.id,
+            user_id=test_user.id,
+            granted_by=test_user.id,
+        )
+    )
     session.commit()
     session.refresh(patient)
     session.close()
@@ -247,7 +255,7 @@ def test_tabular_analysis_patient_not_found(client: TestClient):
 
     response = client.post(f"/api/v1/patients/{non_existent_id}/analysis/tabular", json=payload)
     assert response.status_code == 404
-    assert f"Patient with identifier '{non_existent_id}'" in response.json()["error"]["message"]
+    assert "not found or is not accessible" in response.json()["error"]["message"]
 
 
 @pytest.mark.unit

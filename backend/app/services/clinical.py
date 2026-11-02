@@ -143,6 +143,7 @@ class ClinicalService:
         is_synthetic: bool | None = None,
         search: str | None = None,
         biological_sex: str | None = None,
+        accessible_user_id: UUID | None = None,
     ) -> Sequence[Patient]:
         """Retrieve bounded list of patients matching search criteria and demographic filters."""
         return self.patient_repo.list_patients(
@@ -151,6 +152,7 @@ class ClinicalService:
             is_synthetic=is_synthetic,
             search=search,
             biological_sex=biological_sex,
+            accessible_user_id=accessible_user_id,
         )
 
     def count_patients(
@@ -158,12 +160,14 @@ class ClinicalService:
         is_synthetic: bool | None = None,
         search: str | None = None,
         biological_sex: str | None = None,
+        accessible_user_id: UUID | None = None,
     ) -> int:
         """Count total patients matching search and demographic criteria."""
         return self.patient_repo.count_patients(
             is_synthetic=is_synthetic,
             search=search,
             biological_sex=biological_sex,
+            accessible_user_id=accessible_user_id,
         )
 
 
@@ -862,4 +866,3 @@ class ClinicalService:
             items=bounded_items,
             total=len(items),
         )
-

@@ -14,10 +14,11 @@ from typing import Sequence
 from uuid import UUID
 import logging
 from fastapi import APIRouter, Depends, HTTPException, Query, Request, status
+from sqlalchemy import delete, insert, select
 from sqlalchemy.orm import Session
 
 from backend.app.db import get_db
-from backend.app.db.models import User
+from backend.app.db.models import Patient, User, patient_access
 from backend.app.errors import ErrorResponse
 from backend.app.schemas.analysis import AnalysisRunResponse
 from backend.app.schemas.common import PaginatedResponse
@@ -41,6 +42,7 @@ from backend.app.schemas.patient import (
 )
 from backend.app.security.dependencies import require_permission
 from backend.app.security.roles import Permission
+from backend.app.security.patient_access import require_patient_access
 from backend.app.services.audit import AuditService
 from backend.app.services.clinical import ClinicalService
 from backend.app.services.exceptions import (
@@ -125,11 +127,13 @@ def list_patients(
         is_synthetic=is_synthetic,
         search=search,
         biological_sex=biological_sex,
+        accessible_user_id=current_user.id,
     )
     total = service.count_patients(
         is_synthetic=is_synthetic,
         search=search,
         biological_sex=biological_sex,
+        accessible_user_id=current_user.id,
     )
     return PaginatedResponse(
         items=items,
@@ -156,6 +160,13 @@ def create_patient(
     service = ClinicalService(session)
     try:
         patient = service.create_patient(data=payload)
+        session.execute(
+            insert(patient_access).values(
+                patient_id=patient.id,
+                user_id=current_user.id,
+                granted_by=current_user.id,
+            )
+        )
         AuditService(session).record_event(
             event_type="patient.created",
             action="create",
@@ -189,6 +200,7 @@ def get_patient(
     session: Session = Depends(get_db),
 ) -> PatientResponse:
     """Retrieve patient record by ID."""
+    require_patient_access(session, current_user, patient_id)
     service = ClinicalService(session)
     patient = service.get_patient(patient_id=patient_id)
     if patient is None:
@@ -214,6 +226,7 @@ def update_patient(
     session: Session = Depends(get_db),
 ) -> PatientResponse:
     """Update patient demographic attributes."""
+    require_patient_access(session, current_user, patient_id)
     service = ClinicalService(session)
     try:
         updated = service.update_patient(patient_id=patient_id, data=payload)
@@ -236,6 +249,92 @@ def update_patient(
         ) from exc
 
 
+@router.put(
+    "/patients/{patient_id}/access/{user_id}",
+    status_code=status.HTTP_204_NO_CONTENT,
+    summary="Grant Patient Access",
+    description="Grant a user access to a patient record and its associated resources.",
+)
+def grant_patient_access(
+    patient_id: UUID,
+    user_id: UUID,
+    request: Request,
+    current_user: User = Depends(require_permission(Permission.USER_MANAGE)),
+    session: Session = Depends(get_db),
+) -> None:
+    """Create an explicit patient access grant; administrators are not exempt."""
+    if session.get(Patient, patient_id) is None or session.get(User, user_id) is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Patient or user was not found.",
+        )
+
+    existing = session.scalar(
+        select(patient_access.c.patient_id).where(
+            patient_access.c.patient_id == patient_id,
+            patient_access.c.user_id == user_id,
+        )
+    )
+    if existing is None:
+        session.execute(
+            insert(patient_access).values(
+                patient_id=patient_id,
+                user_id=user_id,
+                granted_by=current_user.id,
+            )
+        )
+        AuditService(session).record_event(
+            event_type="patient.access_granted",
+            action="create",
+            actor_id=current_user.id,
+            resource_type="patient",
+            resource_id=str(patient_id),
+            description=f"Granted patient access to user '{user_id}'",
+            metadata={"user_id": str(user_id)},
+            request=request,
+        )
+        session.commit()
+
+
+@router.delete(
+    "/patients/{patient_id}/access/{user_id}",
+    status_code=status.HTTP_204_NO_CONTENT,
+    summary="Revoke Patient Access",
+    description="Revoke a user's explicit access to a patient record and associated resources.",
+)
+def revoke_patient_access(
+    patient_id: UUID,
+    user_id: UUID,
+    request: Request,
+    current_user: User = Depends(require_permission(Permission.USER_MANAGE)),
+    session: Session = Depends(get_db),
+) -> None:
+    """Remove an explicit patient access grant."""
+    result = session.execute(
+        delete(patient_access).where(
+            patient_access.c.patient_id == patient_id,
+            patient_access.c.user_id == user_id,
+        )
+    )
+    if not result.rowcount:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Patient access grant was not found.",
+        )
+
+    AuditService(session).record_event(
+        event_type="patient.access_revoked",
+        action="delete",
+        actor_id=current_user.id,
+        resource_type="patient",
+        resource_id=str(patient_id),
+        description=f"Revoked patient access from user '{user_id}'",
+        metadata={"user_id": str(user_id)},
+        request=request,
+    )
+    session.commit()
+
+
 # -----------------------------------------------------------------------------
 # 6.3 & 6.5: Data Quality & Timeline
 # -----------------------------------------------------------------------------
@@ -254,6 +353,7 @@ def get_patient_data_quality(
     session: Session = Depends(get_db),
 ) -> DataQualityReport:
     """Compute demographic completeness, clinical continuity, and measurement unit integrity."""
+    require_patient_access(session, current_user, patient_id)
     service = ClinicalService(session)
     try:
         return service.evaluate_data_quality(patient_id=patient_id)
@@ -278,6 +378,7 @@ def get_patient_timeline(
     session: Session = Depends(get_db),
 ) -> PatientTimelineResponse:
     """Retrieve chronological unified event timeline for a patient."""
+    require_patient_access(session, current_user, patient_id)
     service = ClinicalService(session)
     try:
         return service.get_patient_timeline(patient_id=patient_id, limit=limit)
@@ -309,6 +410,7 @@ def list_patient_encounters(
     session: Session = Depends(get_db),
 ) -> PaginatedResponse[EncounterResponse]:
     """List encounters for a patient."""
+    require_patient_access(session, current_user, patient_id)
     service = ClinicalService(session)
     if service.get_patient(patient_id) is None:
         raise HTTPException(
@@ -347,6 +449,7 @@ def create_patient_encounter(
     session: Session = Depends(get_db),
 ) -> EncounterResponse:
     """Create a new clinical encounter associated with a patient."""
+    require_patient_access(session, current_user, patient_id)
     service = ClinicalService(session)
     encounter_data = EncounterCreate(
         patient_id=patient_id,
@@ -397,6 +500,7 @@ def get_encounter(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Encounter with identifier '{encounter_id}' was not found.",
         )
+    require_patient_access(session, current_user, encounter.patient_id)
     return EncounterResponse.model_validate(encounter)
 
 
@@ -416,6 +520,13 @@ def update_encounter(
 ) -> EncounterResponse:
     """Update encounter status or conclusion time."""
     service = ClinicalService(session)
+    encounter = service.get_encounter(encounter_id)
+    if encounter is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Encounter with identifier '{encounter_id}' was not found.",
+        )
+    require_patient_access(session, current_user, encounter.patient_id)
     try:
         updated = service.update_encounter(encounter_id=encounter_id, data=payload)
         AuditService(session).record_event(
@@ -463,6 +574,8 @@ def list_encounter_observations(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Encounter with identifier '{encounter_id}' was not found.",
         )
+    encounter = service.get_encounter(encounter_id)
+    require_patient_access(session, current_user, encounter.patient_id)
 
     offset = (page - 1) * page_size
     items = service.list_observations_by_encounter(
@@ -501,6 +614,7 @@ def create_encounter_observation(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Encounter with identifier '{encounter_id}' was not found.",
         )
+    require_patient_access(session, current_user, encounter.patient_id)
 
     obs_data = ObservationCreate(
         encounter_id=encounter_id,
@@ -551,6 +665,7 @@ def list_patient_observations(
     session: Session = Depends(get_db),
 ) -> PaginatedResponse[ObservationResponse]:
     """List longitudinal observations for a patient."""
+    require_patient_access(session, current_user, patient_id)
     service = ClinicalService(session)
     if service.get_patient(patient_id) is None:
         raise HTTPException(
@@ -590,6 +705,7 @@ def list_patient_analysis_runs(
     session: Session = Depends(get_db),
 ) -> PaginatedResponse[AnalysisRunResponse]:
     """List AI analysis runs for a patient."""
+    require_patient_access(session, current_user, patient_id)
     service = ClinicalService(session)
     if service.get_patient(patient_id) is None:
         raise HTTPException(

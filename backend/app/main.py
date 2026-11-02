@@ -11,6 +11,7 @@ from backend.app.api.assets import router as assets_router
 from backend.app.api.auth import router as auth_router
 from backend.app.api.dashboard import router as dashboard_router
 from backend.app.api.health import router as health_router
+from backend.app.api.imaging import router as imaging_router
 from backend.app.api.patients import router as patients_router
 from backend.app.errors import register_exception_handlers
 from backend.app.logging import setup_logging
@@ -84,12 +85,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     # 5. Attach CORS middleware for frontend communication
     app.add_middleware(
         CORSMiddleware,
-        allow_origins=[
-            "http://localhost:3000",
-            "http://127.0.0.1:3000",
-            "http://localhost:8000",
-            "http://127.0.0.1:8000",
-        ],
+        allow_origins=app_settings.cors_origins,
         allow_credentials=True,
         allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
         allow_headers=["*"],
@@ -106,6 +102,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     app.include_router(patients_router, prefix=prefix)
     app.include_router(assets_router, prefix=prefix)
     app.include_router(analysis_router, prefix=prefix)
+    app.include_router(imaging_router, prefix=prefix)
 
     return app
 

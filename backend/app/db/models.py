@@ -63,6 +63,38 @@ user_roles = Table(
     ),
 )
 
+patient_access = Table(
+    "patient_access",
+    Base.metadata,
+    Column(
+        "patient_id",
+        Uuid,
+        ForeignKey("patients.id", ondelete="CASCADE"),
+        primary_key=True,
+        nullable=False,
+    ),
+    Column(
+        "user_id",
+        Uuid,
+        ForeignKey("users.id", ondelete="CASCADE"),
+        primary_key=True,
+        nullable=False,
+        index=True,
+    ),
+    Column(
+        "granted_by",
+        Uuid,
+        ForeignKey("users.id", ondelete="SET NULL"),
+        nullable=True,
+    ),
+    Column(
+        "granted_at",
+        DateTime(timezone=True),
+        default=lambda: datetime.now(timezone.utc),
+        nullable=False,
+    ),
+)
+
 
 class Role(Base):
     """System role entity representing authorization access tiers."""

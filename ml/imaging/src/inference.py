@@ -15,6 +15,12 @@ class ChestXrayInference:
 
     MODEL_WEIGHTS = "densenet121-res224-nih"
 
+    @classmethod
+    def checkpoint_path(cls) -> Path:
+        """Return the expected cached checkpoint path without loading weights."""
+        weights_url = xrv.models.model_urls[cls.MODEL_WEIGHTS]["weights_url"]
+        return Path(xrv.utils.get_cache_dir()) / Path(weights_url).name
+
     def __init__(self) -> None:
         self.device = torch.device("cpu")
         self.model = xrv.models.DenseNet(weights=self.MODEL_WEIGHTS)

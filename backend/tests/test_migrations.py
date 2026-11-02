@@ -2,7 +2,7 @@
 
 Module 3, Phase 3.5: Alembic Migrations & Synthetic Development Seed Data.
 Verifies Alembic configuration, migration metadata completeness, PostgreSQL DDL
-offline generation, and schema constraint parity across all 9 domain tables.
+offline generation, and schema constraint parity across all 10 current domain tables.
 """
 
 import io
@@ -37,12 +37,13 @@ def test_alembic_config_points_to_correct_directory(alembic_config: Config) -> N
     assert script_dir.versions == str(REPO_ROOT / "backend" / "alembic" / "versions")
 
 
-def test_target_metadata_contains_all_nine_domain_tables() -> None:
-    """Verify that Base.metadata contains the 8 clinical domain entities and 1 association table."""
+def test_target_metadata_contains_all_ten_domain_tables() -> None:
+    """Verify that Base.metadata contains clinical tables and access associations."""
     expected_tables = {
         "users",
         "roles",
         "user_roles",
+        "patient_access",
         "patients",
         "encounters",
         "observations",
@@ -56,17 +57,18 @@ def test_target_metadata_contains_all_nine_domain_tables() -> None:
     )
 
 
-def test_initial_migration_revision_and_structure(alembic_config: Config) -> None:
-    """Verify that the initial migration script exists, has a valid revision ID, and no down_revision."""
+def test_migration_head_extends_initial_schema(alembic_config: Config) -> None:
+    """Verify the patient access migration follows the initial schema."""
     script_dir = ScriptDirectory.from_config(alembic_config)
     head_revision = script_dir.get_current_head()
-    assert head_revision is not None, "No Alembic head revision found in versions directory"
-
-    script = script_dir.get_revision(head_revision)
-    assert script is not None
-    assert script.revision == "98574e91500e"
-    assert script.down_revision is None
-    assert "initial" in script.doc.lower()
+    assert head_revision == "20261102_access"
+    initial = script_dir.get_revision("98574e91500e")
+    assert initial is not None
+    assert initial.down_revision is None
+    assert "initial" in initial.doc.lower()
+    head = script_dir.get_revision(head_revision)
+    assert head is not None
+    assert head.down_revision == "98574e91500e"
 
 
 def test_initial_migration_contains_all_expected_tables(alembic_config: Config) -> None:
@@ -165,6 +167,7 @@ def test_migration_execution_online_on_disposable_engine(alembic_config: Config)
     assert "users" in tables
     assert "roles" in tables
     assert "user_roles" in tables
+    assert "patient_access" in tables
     assert "encounters" in tables
     assert "observations" in tables
     assert "uploaded_assets" in tables

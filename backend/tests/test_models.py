@@ -71,6 +71,7 @@ def test_all_eight_entity_tables_registered_in_metadata():
         "users",
         "roles",
         "user_roles",
+        "patient_access",
         "patients",
         "encounters",
         "observations",
@@ -80,7 +81,7 @@ def test_all_eight_entity_tables_registered_in_metadata():
     }
     actual_tables = set(Base.metadata.tables.keys())
     assert expected_tables.issubset(actual_tables)
-    assert len(expected_tables) == 9
+    assert len(expected_tables) == 10
 
 
 # ---------------------------------------------------------------------------

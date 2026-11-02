@@ -1,6 +1,7 @@
 """Grad-CAM visualization for chest X-ray research use only."""
 
 from pathlib import Path
+import os
 
 import numpy as np
 import torch
@@ -21,9 +22,14 @@ class ChestXrayGradCAM:
     TARGET_LAYER = "features.denseblock4.denselayer16.conv2"
     MODEL_WEIGHTS = "densenet121-res224-nih"
 
-    def __init__(self) -> None:
-        # Reuse the same model configuration and preprocessing pipeline.
-        self.inference = ChestXrayInference()
+    def __init__(
+        self,
+        inference: ChestXrayInference | None = None,
+    ) -> None:
+        """Initialize Grad-CAM, optionally reusing an existing inference model."""
+        self.inference = (
+            inference if inference is not None else ChestXrayInference()
+        )
         self.model = self.inference.model
         self.device = self.inference.device
         self.labels = self.inference.labels
@@ -143,13 +149,23 @@ class ChestXrayGradCAM:
                 alpha=0.4,
             )
 
-            output_path.parent.mkdir(parents=True, exist_ok=True)
+            output_path.parent.mkdir(
+                parents=True,
+                exist_ok=True,
+                mode=0o700,
+            )
+            if os.name != "nt":
+                os.chmod(output_path.parent, 0o700)
             overlay.save(output_path)
+            if os.name != "nt":
+                os.chmod(output_path, 0o600)
 
             return {
                 "image_name": image_path.name,
                 "label": label,
-                "raw_model_score": float(scores[0, label_index].detach().cpu()),
+                "raw_model_score": float(
+                    scores[0, label_index].detach().cpu()
+                ),
                 "output_path": str(output_path),
                 "model": self.MODEL_WEIGHTS,
                 "research_only": True,

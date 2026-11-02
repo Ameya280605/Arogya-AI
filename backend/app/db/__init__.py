@@ -15,6 +15,7 @@ from backend.app.db.models import (
     Role,
     UploadedAsset,
     User,
+    patient_access,
     user_roles,
 )
 from backend.app.db.session import (
@@ -53,5 +54,6 @@ __all__ = [
     "get_session_factory",
     "metadata",
     "normalize_engine_url",
+    "patient_access",
     "user_roles",
 ]

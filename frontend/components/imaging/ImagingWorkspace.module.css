@@ -1,0 +1,211 @@
+.workspace {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+.disclaimer,
+.resultsDisclaimer {
+  padding: var(--space-4) var(--space-5);
+  border: 1px solid var(--color-warning-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-warning-bg);
+  color: var(--color-warning-fg);
+  line-height: var(--line-height-base);
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  padding: var(--space-6);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-lg);
+  background: var(--color-bg-surface);
+  box-shadow: var(--shadow-sm);
+}
+
+.cardHeader,
+.resultHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+}
+
+.cardHeader h2,
+.resultHeader h2 {
+  margin: 0;
+  color: var(--color-text-primary);
+  font-size: var(--font-size-h3);
+}
+
+.cardHeader p,
+.resultHeader p,
+.heatmapSection p {
+  margin: var(--space-2) 0 0;
+  color: var(--color-text-secondary);
+}
+
+.researchTag,
+.status {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-full);
+  background: var(--color-brand-subtle);
+  color: var(--color-brand-fg);
+  font-size: var(--font-size-caption);
+  font-weight: var(--font-weight-semibold);
+  text-transform: capitalize;
+}
+
+.form {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr));
+  align-items: end;
+  gap: var(--space-5);
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  color: var(--color-text-primary);
+  font-size: var(--font-size-body-sm);
+  font-weight: var(--font-weight-medium);
+}
+
+.field select {
+  width: 100%;
+  min-height: 44px;
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-md);
+  background: var(--color-bg-surface);
+  color: var(--color-text-primary);
+  font: inherit;
+}
+
+.field select:focus-visible,
+.checkboxField input:focus-visible {
+  outline: 2px solid var(--color-brand-primary);
+  outline-offset: 2px;
+}
+
+.checkboxField {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: 44px;
+  color: var(--color-text-primary);
+}
+
+.checkboxField input {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--color-brand-primary);
+}
+
+.error {
+  grid-column: 1 / -1;
+  margin: 0;
+  color: var(--color-danger-fg);
+}
+
+.emptyMessage {
+  margin: 0;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-body-sm);
+}
+
+.resultHeader {
+  align-items: center;
+}
+
+.resultHeader code {
+  overflow-wrap: anywhere;
+}
+
+.status_completed {
+  background: var(--color-success-bg);
+  color: var(--color-success-fg);
+}
+
+.status_failed {
+  background: var(--color-danger-bg);
+  color: var(--color-danger-fg);
+}
+
+.scoreNote {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-body-sm);
+}
+
+.tableWrap {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.predictionTable {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.predictionTable th,
+.predictionTable td {
+  padding: var(--space-3);
+  border-bottom: 1px solid var(--color-border-subtle);
+}
+
+.predictionTable thead th {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-caption);
+  text-transform: uppercase;
+}
+
+.predictionTable tbody th {
+  color: var(--color-text-primary);
+  font-weight: var(--font-weight-medium);
+}
+
+.predictionTable td {
+  color: var(--color-text-secondary);
+  font-family: var(--font-mono);
+}
+
+.heatmapSection {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding-top: var(--space-5);
+  border-top: 1px solid var(--color-border-subtle);
+}
+
+.heatmapSection h3 {
+  margin: 0;
+  color: var(--color-text-primary);
+}
+
+.heatmap {
+  display: block;
+  width: min(100%, 720px);
+  height: auto;
+  margin-top: var(--space-3);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-md);
+  background: #111827;
+}
+
+@media (max-width: 640px) {
+  .card {
+    padding: var(--space-4);
+  }
+
+  .form {
+    grid-template-columns: 1fr;
+  }
+}

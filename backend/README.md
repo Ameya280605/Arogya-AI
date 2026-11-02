@@ -3,13 +3,13 @@
 This directory contains the Python backend service, REST API routers, domain logic, and backend test suites for Arogya AI.
 
 > **Status:** Module 3 (Database Persistence & Data Layer) — Phase 3.7: Database Verification and Backup Strategy (Module 3 Complete).<br/>
-> The database foundation includes PostgreSQL engine configuration, session lifecycle dependencies, 8 domain models + association table, 32 Pydantic data contracts, Alembic schema migrations (`98574e91500e`), synthetic development seed data, data access repositories, clinical domain services (`ClinicalService`, `UserService`, `AuditService`), read-only database verification (`scripts/verify_database.py`), logical PostgreSQL backups (`scripts/backup_database.py`), and safe disaster recovery procedures (`scripts/restore_database.py`). Architecture details: [`docs/architecture/CONFIGURATION.md`](../docs/architecture/CONFIGURATION.md) and [`docs/architecture/API_DATA_CONTRACTS.md`](../docs/architecture/API_DATA_CONTRACTS.md).
+> The database foundation includes PostgreSQL engine configuration, session lifecycle dependencies, 8 domain models + 2 association tables, 32 Pydantic data contracts, Alembic schema migrations (initial revision `98574e91500e`, current head `20261102_access`), synthetic development seed data, data access repositories, clinical domain services (`ClinicalService`, `UserService`, `AuditService`), read-only database verification (`scripts/verify_database.py`), logical PostgreSQL backups (`scripts/backup_database.py`), and safe disaster recovery procedures (`scripts/restore_database.py`). Architecture details: [`docs/architecture/CONFIGURATION.md`](../docs/architecture/CONFIGURATION.md) and [`docs/architecture/API_DATA_CONTRACTS.md`](../docs/architecture/API_DATA_CONTRACTS.md).
 
 ---
 
 ## 1. Selected Python Environment & Dependencies
 
-* **Interpreter Version:** Python 3.14.6 (64-bit on Windows).
+* **Tested local interpreter:** Python 3.13.9 (64-bit on Windows).
 * **Virtual Environment Path:** `.venv/` (located at repository root, excluded from Git).
 * **Core & Testing Dependencies (`backend/requirements.txt`):**
   * `fastapi>=0.115.0,<1.0.0`
@@ -20,11 +20,30 @@ This directory contains the Python backend service, REST API routers, domain log
   * `sqlalchemy>=2.0.0,<3.0.0`
   * `psycopg[binary]>=3.2.0,<4.0.0`
   * `alembic>=1.13.0,<2.0.0`
+  * Imaging: `numpy>=1.24.0,<3.0.0`, `torch>=2.0.0,<3.0.0`, `torchxrayvision>=1.5.0,<2.0.0`, and `Pillow>=9.0.0,<14.0.0`
 
 ### Installing Dependencies into `.venv`
 ```powershell
 .\.venv\Scripts\python.exe -m pip install -r backend\requirements.txt
 ```
+
+### Chest X-ray Imaging (Research Only)
+
+The backend exposes `POST /api/v1/patients/{patient_id}/analysis/imaging` and authenticated `GET /api/v1/analysis-runs/{run_id}/imaging/heatmap`. The API prefix is configurable through `API_PREFIX` (default `/api/v1`). Inference accepts an existing PNG/JPEG asset belonging to the requested patient; it does not accept DICOM. The JSON request requires `asset_id` and optionally accepts `encounter_id`, `generate_heatmap`, and `heatmap_label`. Starting inference requires `analysis:execute`; reading a generated heatmap requires `analysis:read`. Currently only the administrator role is granted `analysis:execute`.
+
+The service loads TorchXRayVision weights `densenet121-res224-nih` on the first inference. The checkpoint `nih-densenet121-d121-tw-lr001-rot45-tr15-sc15-seed0-best.pt` is not bundled with the repository; TorchXRayVision downloads it when missing from `~/.torchxrayvision/models_data/` for the backend service account. Provision that file/cache before running offline, or allow outbound network access. The model runs on CPU and its returned values are raw, uncalibrated scores.
+
+`UPLOAD_STORAGE_DIR` must point to durable, private storage outside the web root. On POSIX, the backend restricts upload and Grad-CAM directories to mode `0700` and files to `0600`; on Windows, configure restrictive NTFS ACLs for the service account. Generated Grad-CAM PNGs are kept in the sibling `imaging_artifacts` directory. A multi-replica backend requires a persistent shared volume for both uploads and heatmaps.
+
+Set `CORS_ALLOWED_ORIGINS` to a comma-separated list of exact frontend origins when deploying cross-origin. Development/testing defaults to localhost origins; staging/production default to no CORS origins. The setting rejects wildcards, credentials, and URL paths.
+
+Staging and production require a unique `SECRET_KEY` of at least 32 characters at settings initialization. The example environment file leaves it blank intentionally; provision it using a secret manager or protected environment variable.
+
+### Patient-Level Access Assignments
+
+Role permissions are supplemented by explicit user-to-patient grants. Creating a patient grants access to the creator; administrators do not bypass assignments. Users with `user:manage` may grant or revoke access using `PUT` or `DELETE /api/v1/patients/{patient_id}/access/{user_id}`. Patient lists and patient-associated resources, including assets, analyses, and heatmaps, are restricted to assigned patients. Unassigned and nonexistent patient resources return the same not-found response.
+
+Apply database migrations through the current Alembic head (`20261102_access`) before deployment. The access migration does not assign existing patients to users; grant access explicitly after upgrading.
 
 ---
 
@@ -214,7 +233,7 @@ Backend tests are organized with root-level [`pytest.ini`](../pytest.ini) and sh
 * Caller-owned transaction atomicity: verifying full rollback of multi-entity operations when exceptions occur.
 * Operational audit logging with automated credential redaction (`password`, `hashed_password`, `secret_key`, `token`).
 * Alembic migration configuration, script directory, and versions path resolution.
-* Target metadata validation registering all 9 healthcare entities and association tables in `Base.metadata`.
+* Target metadata validation registering all 10 healthcare entities and association tables in `Base.metadata`.
 * Initial migration revision (`98574e91500e`) schema parity: creation and dropping of all 9 tables.
 * Cascade referential actions on association tables, RESTRICT policies protecting historical patient records, and SET NULL on audit/asset links.
 * Offline PostgreSQL DDL generation without requiring a live database connection (`alembic upgrade head --sql`).
@@ -235,7 +254,7 @@ Backend tests are organized with root-level [`pytest.ini`](../pytest.ini) and sh
 * Encounter temporal order integrity: validation that `end_time >= start_time`.
 * ORM serialization parity: verifying `from_attributes=True` serialization from representative SQLAlchemy domain entities.
 * Declarative base export, MetaData collection, and table registration.
-* Entity mappings for 8 clinical domain tables + 1 explicit association table: `users`, `roles`, `user_roles`, `patients`, `encounters`, `observations`, `uploaded_assets`, `analysis_runs`, `audit_events`.
+* Entity mappings for 8 clinical domain tables + 2 explicit association tables: `users`, `roles`, `user_roles`, `patient_access`, `patients`, `encounters`, `observations`, `uploaded_assets`, `analysis_runs`, `audit_events`.
 * Primary keys (`Uuid`) and foreign key relationships with referential deletion policies (`RESTRICT` on clinical history, `SET NULL` on audit actors and asset links).
 * Uniqueness constraints across usernames, emails, role names, pseudonymous MRNs, and storage paths.
 * Many-to-Many user-role association mechanics and cascade behavior.
@@ -269,7 +288,7 @@ Backend tests are organized with root-level [`pytest.ini`](../pytest.ini) and sh
 ## 8. Operational Readiness vs. Clinical Readiness
 
 > **Important Boundary Notice:**<br/>
-> The local development server and automated tests verify **software engineering mechanics only** (HTTP lifecycle, routing, error envelopes, logging, database session lifecycles, and Pydantic validation contracts). This does **not** constitute clinical validation, medical device certification, or production deployment readiness. External databases (Module 3), multi-agent pipelines (Module 11), and clinical safety controls (Module 13) are introduced in subsequent modules.
+> The imaging API and `/imaging` research UI are integrated, and automated tests cover their software behavior. This verifies engineering mechanics only; it does **not** constitute clinical validation, medical device certification, or production deployment readiness. Patient access requires explicit user-to-patient assignments. Readiness probes database connectivity, required tables, and Alembic head, and checks that a locally cached checkpoint exists and is non-empty; it does not validate checkpoint integrity, persistent storage, or run inference. It never applies migrations. Deployment storage and model provisioning still require operational work.
 
 ---
 

@@ -8,7 +8,7 @@
 ## 1. Overview & Architectural Principles
 
 1. **Canonical Source of Truth:** All 21 modules adhere strictly to the roadmap sequence defined in `docs/architecture/MODULE_DEPENDENCIES.md` across 5 execution blocks.
-2. **Honest Route States:** Every planned user-facing route is direct-loadable, rendered within the shared `AppShell`, and clearly communicates its actual readiness using `PlannedFeatureState`.
+2. **Honest Route States:** User-facing routes are direct-loadable, rendered within the shared `AppShell`, and clearly distinguish implemented workflows from planned modules.
 3. **No Fabricated Data or Workflows:** Route placeholders explicitly distinguish active frontend shell foundations from pending backend integrations, model inference, and EHR pipelines.
 4. **Internal Foundations vs. User-Facing Routes:** Core platform foundations (Modules 1, 2, 3, 4, 9) that function as internal infrastructure, backend APIs, database persistence, or mathematical research engines are properly accounted for without creating artificial, unneeded top-level routes.
 
@@ -27,7 +27,7 @@
 | **M7** | Security, Identity & File Handling | `/security` | User-Facing (Security/Gov) | Block 2 | M2, M3 | **Planned (Module 7)** | RBAC session policies, multi-factor authentication, cryptographic audit verification, validated medical image uploads. Auth boundaries deferred to Module 7. |
 | **M8** | Clinical Workspace | `/analysis` | User-Facing (Clinical) | Block 2 | M3, M4, M5, M6, M7 | **Planned (Module 8)** | Multimodal clinical case intake, chief complaint entry, investigation workflow runners, and observation panel synthesis. Inference runners deferred. |
 | **M9** | Tabular ML Research | *Integrated (`/research`)* | ML Research Pipeline | Block 3 | M3, M8 | **Planned (Module 9)** | Baseline scikit-learn / XGBoost risk models on structured vitals and labs. Surfaced directly in the AI Research Lab (`/research`) and Clinical Workspace (`/analysis`). |
-| **M10** | Chest X-ray Imaging Research | `/imaging` | User-Facing (Clinical/Vision) | Block 3 | M3, M7, M8 | **Planned (Module 10)** | Chest radiography preprocessing, PyTorch deep learning vision pipeline, DICOM viewing, and Grad-CAM saliency heatmaps. Vision pipeline deferred to Module 10. |
+| **M10** | Chest X-ray Imaging Research | `/imaging` | User-Facing (Clinical/Vision) | Block 3 | M3, M7, M8 | **Integrated research workflow** | Authenticated patient and PNG/JPEG asset selection, persisted chest X-ray inference, raw score display, and optional Grad-CAM heatmap retrieval. DICOM inference remains unsupported. |
 | **M11** | Multi-Agent Orchestration | `/agents` | User-Facing (AI Research) | Block 3 | M8, M9, M10 | **Planned (Module 11)** | Deterministic LangGraph state coordination, specialized agent coordinator (Context, Lab, Vision, Knowledge, Critic), execution tracing. |
 | **M12** | Medical Knowledge Hub & RAG | `/knowledge` | User-Facing (Knowledge) | Block 3 | M2, M3, M8, M11 | **Planned (Module 12)** | Clinical practice guidelines index, vector embeddings, source-attributed retrieval-augmented generation (RAG), and prompt-injection defenses. |
 | **M13** | Critic, Consensus, Uncertainty & Safety | `/safety` | User-Facing (AI Safety) | Block 3 | M9, M10, M11, M12 | **Planned (Module 13)** | Cross-agent contradiction checking, explicit clinical disagreement preservation, entropy calibration, and safety abstention triggers. |

@@ -20,6 +20,7 @@ from backend.app.db.session import get_db
 from backend.app.errors import ErrorResponse
 from backend.app.schemas.asset import UploadedAssetResponse
 from backend.app.security.dependencies import require_permission
+from backend.app.security.patient_access import require_patient_access
 from backend.app.security.roles import Permission
 from backend.app.services.audit import AuditService
 from backend.app.services.storage import FileValidationError, StorageService
@@ -78,6 +79,7 @@ async def upload_asset(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Patient '{patient_id}' not found",
         )
+    require_patient_access(db, current_user, patient_id)
 
     # 2. Cross-patient validation: verify encounter belongs to this patient
     if encounter_id is not None:
@@ -183,6 +185,7 @@ def get_asset_metadata(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Asset '{asset_id}' not found",
         )
+    require_patient_access(db, current_user, asset.patient_id)
     return UploadedAssetResponse.model_validate(asset)
 
 
@@ -206,6 +209,7 @@ def download_asset(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Asset '{asset_id}' not found",
         )
+    require_patient_access(db, current_user, asset.patient_id)
 
     app_settings: Settings = getattr(request.app.state, "settings", None) or settings
     try:
@@ -262,6 +266,7 @@ def list_patient_assets(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Patient '{patient_id}' not found",
         )
+    require_patient_access(db, current_user, patient_id)
 
     stmt = (
         select(UploadedAsset)

@@ -42,7 +42,7 @@ def test_openapi_paths_and_operations(client: TestClient) -> None:
     ready_op = paths["/api/v1/ready"]["get"]
     assert ready_op["operationId"] == "get_readiness"
     assert ready_op["summary"] == "Readiness Probe"
-    assert "ready" in ready_op["description"].lower()
+    assert "readiness" in ready_op["description"].lower()
     assert "Health" in ready_op["tags"]
 
 
@@ -74,6 +74,7 @@ def test_openapi_response_models_and_schemas(client: TestClient) -> None:
 
     ready_responses = schema["paths"]["/api/v1/ready"]["get"]["responses"]
     assert "200" in ready_responses
+    assert "503" in ready_responses
     assert "500" in ready_responses
     assert (
         ready_responses["200"]["content"]["application/json"]["schema"]["$ref"]
@@ -97,16 +98,20 @@ def test_runtime_payloads_satisfy_openapi_schema(client: TestClient) -> None:
 
     # Readiness runtime check
     ready_resp = client.get("/api/v1/ready")
-    assert ready_resp.status_code == 200
     ready_data = ready_resp.json()
     assert set(ready_data.keys()) == {"status", "service", "environment", "checks"}
-    assert ready_data["status"] == "ready"
     assert isinstance(ready_data["checks"], dict)
     assert "core_api" in ready_data["checks"]
     for check_name, check_info in ready_data["checks"].items():
         assert "status" in check_info
         assert "detail" in check_info
         assert check_info["status"] in ("ready", "not_ready", "unconfigured")
+    is_ready = all(
+        check["status"] == "ready"
+        for check in ready_data["checks"].values()
+    )
+    assert ready_data["status"] == ("ready" if is_ready else "not_ready")
+    assert ready_resp.status_code == (200 if is_ready else 503)
 
 
 def test_openapi_custom_prefix_adaptation() -> None:

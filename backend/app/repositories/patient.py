@@ -9,7 +9,7 @@ from typing import Sequence
 from uuid import UUID
 from sqlalchemy import func, select
 
-from backend.app.db.models import Patient
+from backend.app.db.models import Patient, patient_access
 from backend.app.repositories.base import BaseRepository
 
 
@@ -68,10 +68,16 @@ class PatientRepository(BaseRepository[Patient]):
         is_synthetic: bool | None = None,
         search: str | None = None,
         biological_sex: str | None = None,
+        accessible_user_id: UUID | None = None,
     ) -> Sequence[Patient]:
         """Retrieve a bounded list of patient records matching optional search and filters."""
         clamped_limit, clamped_offset = self._sanitize_pagination(limit, offset)
         stmt = select(Patient)
+        if accessible_user_id is not None:
+            stmt = stmt.join(
+                patient_access,
+                patient_access.c.patient_id == Patient.id,
+            ).where(patient_access.c.user_id == accessible_user_id)
 
         if is_synthetic is not None:
             stmt = stmt.where(Patient.is_synthetic == is_synthetic)
@@ -93,9 +99,15 @@ class PatientRepository(BaseRepository[Patient]):
         is_synthetic: bool | None = None,
         search: str | None = None,
         biological_sex: str | None = None,
+        accessible_user_id: UUID | None = None,
     ) -> int:
         """Count total patient records matching criteria."""
         stmt = select(func.count(Patient.id))
+        if accessible_user_id is not None:
+            stmt = stmt.join(
+                patient_access,
+                patient_access.c.patient_id == Patient.id,
+            ).where(patient_access.c.user_id == accessible_user_id)
         if is_synthetic is not None:
             stmt = stmt.where(Patient.is_synthetic == is_synthetic)
         if biological_sex is not None and biological_sex.strip():
@@ -104,4 +116,3 @@ class PatientRepository(BaseRepository[Patient]):
             term = f"%{search.strip()}%"
             stmt = stmt.where(Patient.mrn_pseudonym.ilike(term))
         return self.session.scalar(stmt) or 0
-

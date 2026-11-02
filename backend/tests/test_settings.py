@@ -27,6 +27,12 @@ def test_default_settings() -> None:
     assert settings.redoc_url == "/redoc"
     assert settings.database_url is None
     assert settings.secret_key is None
+    assert settings.cors_origins == [
+        "http://localhost:3000",
+        "http://127.0.0.1:3000",
+        "http://localhost:8000",
+        "http://127.0.0.1:8000",
+    ]
 
 
 def test_env_variable_parsing_and_normalization(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -36,6 +42,11 @@ def test_env_variable_parsing_and_normalization(monkeypatch: pytest.MonkeyPatch)
     monkeypatch.setenv("LOG_LEVEL", "debug")
     monkeypatch.setenv("API_PORT", "9000")
     monkeypatch.setenv("API_PREFIX", "/api/v2/")
+    monkeypatch.setenv("SECRET_KEY", "staging-secret-key-with-at-least-32-characters")
+    monkeypatch.setenv(
+        "CORS_ALLOWED_ORIGINS",
+        "https://app.example.test, https://admin.example.test/",
+    )
 
     settings = Settings()
     assert settings.app_name == "Arogya Cluster Node"
@@ -43,6 +54,10 @@ def test_env_variable_parsing_and_normalization(monkeypatch: pytest.MonkeyPatch)
     assert settings.log_level == "DEBUG"  # Normalized to uppercase
     assert settings.api_port == 9000
     assert settings.api_prefix == "/api/v2"  # Trailing slash stripped
+    assert settings.cors_origins == [
+        "https://app.example.test",
+        "https://admin.example.test",
+    ]
 
 
 def test_disabling_documentation_via_environment_values(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -96,9 +111,101 @@ def test_production_debug_forbidden() -> None:
         Settings(app_env="PRODUCTION", debug=True)
 
     # Production with debug=False must succeed
-    prod_settings = Settings(app_env="production", debug=False)
+    prod_settings = Settings(
+        app_env="production",
+        debug=False,
+        secret_key="production-secret-key-with-at-least-32-characters",
+    )
     assert prod_settings.app_env == "production"
     assert prod_settings.debug is False
+
+
+@pytest.mark.parametrize("app_env", ["staging", "production"])
+@pytest.mark.parametrize(
+    "secret_key",
+    [None, "too-short", "arogya-ai-dev-insecure-secret-key-at-least-32-characters"],
+)
+def test_deployment_environments_reject_missing_or_unsafe_secrets(
+    app_env: str,
+    secret_key: str | None,
+) -> None:
+    with pytest.raises(ValidationError, match="require a unique SECRET_KEY"):
+        Settings(
+            _env_file=None,
+            app_env=app_env,
+            debug=False,
+            secret_key=secret_key,
+        )
+
+
+@pytest.mark.parametrize(
+    "origins",
+    [
+        "*",
+        "https://*.example.test",
+        "https://frontend.example.test/path",
+        "javascript://frontend.example.test",
+        "https://user:password@frontend.example.test",
+        "https://frontend.example.test:99999",
+    ],
+)
+def test_invalid_cors_origins_are_rejected(origins: str) -> None:
+    with pytest.raises(ValidationError, match="explicit HTTP\\(S\\) origins"):
+        Settings(cors_allowed_origins=origins)
+
+
+def test_deployment_cors_is_closed_without_explicit_origins() -> None:
+    settings = Settings(
+        _env_file=None,
+        app_env="production",
+        debug=False,
+        secret_key="production-secret-key-with-at-least-32-characters",
+    )
+    assert settings.cors_origins == []
+
+
+def test_configured_cors_origins_control_preflight_access() -> None:
+    app = create_app(
+        Settings(
+            _env_file=None,
+            app_env="production",
+            debug=False,
+            secret_key="production-secret-key-with-at-least-32-characters",
+            cors_allowed_origins="https://frontend.example.test",
+        )
+    )
+    client = TestClient(app)
+    response = client.options(
+        "/api/v1/health",
+        headers={
+            "Origin": "https://frontend.example.test",
+            "Access-Control-Request-Method": "GET",
+        },
+    )
+    assert response.status_code == 200
+    assert response.headers["access-control-allow-origin"] == (
+        "https://frontend.example.test"
+    )
+    assert response.headers["access-control-allow-credentials"] == "true"
+
+
+def test_deployment_cors_does_not_allow_local_origin_by_default() -> None:
+    app = create_app(
+        Settings(
+            _env_file=None,
+            app_env="production",
+            debug=False,
+            secret_key="production-secret-key-with-at-least-32-characters",
+        )
+    )
+    response = TestClient(app).options(
+        "/api/v1/health",
+        headers={
+            "Origin": "http://localhost:3000",
+            "Access-Control-Request-Method": "GET",
+        },
+    )
+    assert "access-control-allow-origin" not in response.headers
 
 
 def test_openapi_disabled_cascades_to_docs_and_redoc() -> None:
@@ -139,7 +246,7 @@ def test_settings_overrides_create_isolated_applications() -> None:
 
 def test_root_api_prefix_mounting() -> None:
     """Configuring api_prefix='/' mounts endpoints directly at the root."""
-    settings = Settings(api_prefix="/")
+    settings = Settings(api_prefix="/", database_url=None)
     app = create_app(settings)
     client = TestClient(app)
 
@@ -148,8 +255,8 @@ def test_root_api_prefix_mounting() -> None:
     assert health_resp.json()["status"] == "ok"
 
     ready_resp = client.get("/ready")
-    assert ready_resp.status_code == 200
-    assert ready_resp.json()["status"] == "ready"
+    assert ready_resp.status_code == 503
+    assert ready_resp.json()["status"] == "not_ready"
 
 
 @pytest.mark.parametrize(
@@ -232,8 +339,8 @@ def test_masked_database_url_redacts_credentials() -> None:
     assert settings_none.masked_database_url is None
 
 
-def test_app_creation_with_valid_database_url_does_not_connect() -> None:
-    """Configuring a database URL does not initiate a connection on import or app creation."""
+def test_app_creation_does_not_connect_until_readiness_probe(monkeypatch) -> None:
+    """App construction is lazy; readiness performs the configured database probe."""
     # Use TEST-NET-1 documentation IP (RFC 5737) to guarantee any real connection attempt would fail/hang
     unreachable_url = "postgresql+psycopg://user:pass@192.0.2.1:5432/arogya_test"
     settings = Settings(database_url=unreachable_url)
@@ -247,8 +354,16 @@ def test_app_creation_with_valid_database_url_does_not_connect() -> None:
     assert health_resp.status_code == 200
     assert health_resp.json()["status"] == "ok"
 
-    # Readiness probe succeeds without attempting connection
+    from backend.app.api import health as health_api
+    from backend.app.db.session import DatabaseConnectionError
+
+    def fail_probe(**kwargs):
+        raise DatabaseConnectionError("unavailable")
+
+    monkeypatch.setattr(health_api, "check_database_connection", fail_probe)
+
+    # Readiness reports the failed dependency without leaking connection details.
     ready_resp = client.get("/api/v1/ready")
-    assert ready_resp.status_code == 200
-    assert ready_resp.json()["status"] == "ready"
-    assert ready_resp.json()["checks"]["database"]["status"] == "unconfigured"
+    assert ready_resp.status_code == 503
+    assert ready_resp.json()["status"] == "not_ready"
+    assert ready_resp.json()["checks"]["database"]["status"] == "not_ready"

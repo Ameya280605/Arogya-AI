@@ -3,10 +3,20 @@
 Provides lightweight liveness and readiness probes under the configured versioned API prefix.
 """
 
+import logging
 from typing import Literal
-from fastapi import APIRouter, Request, status
+from fastapi import APIRouter, Request, Response, status
 from pydantic import BaseModel, Field
+from backend.app.db.session import (
+    DatabaseError,
+    check_database_connection,
+    check_database_schema,
+)
 from backend.app.errors import ErrorResponse
+from backend.app.settings import Settings
+from ml.imaging.src.inference import ChestXrayInference
+
+logger = logging.getLogger("arogya.api.health")
 
 router = APIRouter(
     tags=["Health"],
@@ -81,38 +91,99 @@ async def get_health(request: Request) -> HealthResponse:
     "/ready",
     response_model=ReadyResponse,
     status_code=status.HTTP_200_OK,
+    responses={
+        status.HTTP_503_SERVICE_UNAVAILABLE: {
+            "model": ReadyResponse,
+            "description": "One or more required subsystems are not ready",
+        }
+    },
     summary="Readiness Probe",
     description=(
-        "Confirms that the application has completed initialization and is ready for request handling. "
-        "At Module 2, readiness reflects core runtime initialization; database (Module 3) and ML "
-        "components (Modules 9-10) are intentionally marked unconfigured."
+        "Checks readiness by probing database connectivity and availability of "
+        "the cached chest X-ray model checkpoint without loading model weights."
     ),
     operation_id="get_readiness",
 )
-async def get_readiness(request: Request) -> ReadyResponse:
+async def get_readiness(
+    request: Request,
+    response: Response,
+) -> ReadyResponse:
     """Return application readiness state."""
     settings = getattr(request.app.state, "settings", None)
-    service_name = settings.app_name if settings else "Arogya AI"
-    environment = settings.app_env if settings else "development"
+    if settings is None:
+        settings = Settings()
+    service_name = settings.app_name
+    environment = settings.app_env
 
-    # Only declare components that actually exist in the current architecture phase
+    if settings.database_url:
+        try:
+            database_ready = check_database_connection(
+                settings=settings
+            ) and check_database_schema(settings=settings)
+        except (DatabaseError, ImportError, ValueError) as exc:
+            logger.warning(
+                "Database readiness check failed: error_type=%s",
+                type(exc).__name__,
+            )
+            database_ready = False
+
+        database_status: Literal[
+            "ready", "not_ready", "unconfigured"
+        ] = "ready" if database_ready else "not_ready"
+        database_detail = (
+            "Database connection, schema, and migration head are available."
+            if database_ready
+            else "Database connection or schema is unavailable."
+        )
+    else:
+        database_status = "unconfigured"
+        database_detail = "DATABASE_URL is not configured."
+
+    try:
+        checkpoint_path = ChestXrayInference.checkpoint_path()
+        model_ready = (
+            checkpoint_path.is_file()
+            and checkpoint_path.stat().st_size > 0
+        )
+    except (ImportError, OSError, KeyError) as exc:
+        logger.warning(
+            "Imaging model readiness check failed: error_type=%s",
+            type(exc).__name__,
+        )
+        model_ready = False
+
+    model_status: Literal[
+        "ready", "not_ready", "unconfigured"
+    ] = "ready" if model_ready else "not_ready"
+    model_detail = (
+        "Required chest X-ray model checkpoint is available."
+        if model_ready
+        else "Required chest X-ray model checkpoint is unavailable."
+    )
+
     checks = {
         "core_api": ReadyComponentStatus(
             status="ready",
             detail="FastAPI application factory and settings initialized",
         ),
         "database": ReadyComponentStatus(
-            status="unconfigured",
-            detail="PostgreSQL connection unconfigured (planned in Module 3)",
+            status=database_status,
+            detail=database_detail,
         ),
         "ml_inference": ReadyComponentStatus(
-            status="unconfigured",
-            detail="Machine learning pipelines unconfigured (planned in Modules 9-10)",
+            status=model_status,
+            detail=model_detail,
         ),
     }
 
+    is_ready = all(
+        check.status == "ready" for check in checks.values()
+    )
+    if not is_ready:
+        response.status_code = status.HTTP_503_SERVICE_UNAVAILABLE
+
     return ReadyResponse(
-        status="ready",
+        status="ready" if is_ready else "not_ready",
         service=service_name,
         environment=environment,
         checks=checks,

@@ -16,7 +16,7 @@ from sqlalchemy import create_engine, text
 from sqlalchemy.pool import StaticPool
 
 from backend.app.db.base import Base
-import backend.app.db.models  # noqa: F401 - registers all 9 tables in Base.metadata
+import backend.app.db.models  # noqa: F401 - registers all 10 tables in Base.metadata
 from backend.app.settings import Settings
 from scripts.backup_database import (
     BACKUP_SUCCESS,
@@ -55,7 +55,7 @@ REPO_ROOT = Path(__file__).resolve().parent.parent.parent
 # -----------------------------------------------------------------------------
 
 def test_verify_database_success() -> None:
-    """Verify that a fully migrated database with all 9 tables and Alembic head returns EXIT_SUCCESS."""
+    """Verify that a fully migrated database with all 10 tables returns EXIT_SUCCESS."""
     engine = create_engine(
         "sqlite:///:memory:",
         connect_args={"check_same_thread": False},
@@ -67,16 +67,16 @@ def test_verify_database_success() -> None:
     # Create alembic_version table with matching head revision
     with engine.begin() as conn:
         conn.execute(text("CREATE TABLE alembic_version (version_num VARCHAR(32) NOT NULL PRIMARY KEY);"))
-        conn.execute(text("INSERT INTO alembic_version (version_num) VALUES ('98574e91500e');"))
+        conn.execute(text("INSERT INTO alembic_version (version_num) VALUES ('20261102_access');"))
 
     result = verify_database(engine=engine, repo_root=REPO_ROOT)
     assert result.exit_code == EXIT_SUCCESS
     assert result.status == "VERIFIED"
     assert result.dialect == "sqlite"
     assert result.missing_tables == []
-    assert result.current_revision == "98574e91500e"
-    assert result.expected_revision == "98574e91500e"
-    assert len(result.found_tables or []) >= 9
+    assert result.current_revision == "20261102_access"
+    assert result.expected_revision == "20261102_access"
+    assert len(result.found_tables or []) >= 10
 
 
 def test_verify_database_missing_schema() -> None:
@@ -89,7 +89,7 @@ def test_verify_database_missing_schema() -> None:
     result = verify_database(engine=engine, repo_root=REPO_ROOT)
     assert result.exit_code == EXIT_SCHEMA_MISSING
     assert result.status == "SCHEMA_MISSING"
-    assert len(result.missing_tables or []) == 9
+    assert len(result.missing_tables or []) == 10
     assert "users" in (result.missing_tables or [])
     assert "patients" in (result.missing_tables or [])
 
@@ -112,7 +112,7 @@ def test_verify_database_migration_mismatch() -> None:
     assert result.exit_code == EXIT_MIGRATION_MISMATCH
     assert result.status == "MIGRATION_MISMATCH"
     assert result.current_revision == "outdated_rev_0001"
-    assert result.expected_revision == "98574e91500e"
+    assert result.expected_revision == "20261102_access"
 
 
 def test_verify_database_connection_failure_and_secret_redaction() -> None:

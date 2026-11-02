@@ -6,9 +6,13 @@ FastAPI dependency injection, and lightweight connection verification.
 
 from collections.abc import Generator
 import logging
+from pathlib import Path
 import re
 from urllib.parse import urlsplit
-from sqlalchemy import Engine, create_engine, text
+from alembic.config import Config
+from alembic.migration import MigrationContext
+from alembic.script import ScriptDirectory
+from sqlalchemy import Engine, create_engine, inspect, text
 from sqlalchemy.orm import Session, sessionmaker
 from sqlalchemy.pool import StaticPool
 from backend.app.settings import Settings, get_settings
@@ -30,6 +34,12 @@ class DatabaseConfigurationError(DatabaseError):
 
 class DatabaseConnectionError(DatabaseError):
     """Raised when database connectivity verification fails."""
+
+    pass
+
+
+class DatabaseSchemaError(DatabaseError):
+    """Raised when database schema readiness cannot be verified."""
 
     pass
 
@@ -275,4 +285,53 @@ def check_database_connection(
         )
         raise DatabaseConnectionError(
             f"Database connectivity check failed: {exc.__class__.__name__}"
+        ) from exc
+
+
+def check_database_schema(
+    engine: Engine | None = None,
+    settings: Settings | None = None,
+) -> bool:
+    """Verify required tables and the current Alembic head without changing the database."""
+    try:
+        target_engine = engine or get_engine(settings)
+        from backend.app.db.base import Base
+        import backend.app.db.models  # noqa: F401 - register all application tables
+
+        repository_root = Path(__file__).resolve().parents[3]
+        alembic_config = Config(
+            str(repository_root / "backend" / "alembic.ini")
+        )
+        alembic_config.set_main_option(
+            "script_location",
+            str(repository_root / "backend" / "alembic"),
+        )
+        expected_revision = ScriptDirectory.from_config(
+            alembic_config
+        ).get_current_head()
+
+        with target_engine.connect() as connection:
+            current_revision = MigrationContext.configure(
+                connection
+            ).get_current_revision()
+            existing_tables = set(inspect(connection).get_table_names())
+
+        missing_tables = set(Base.metadata.tables) - existing_tables
+        if current_revision != expected_revision or missing_tables:
+            logger.warning(
+                "Database schema is not at migration head: "
+                "current_revision=%s expected_revision=%s missing_table_count=%d",
+                current_revision,
+                expected_revision,
+                len(missing_tables),
+            )
+            return False
+        return True
+    except Exception as exc:
+        logger.warning(
+            "Database schema verification failed: error_type=%s",
+            type(exc).__name__,
+        )
+        raise DatabaseSchemaError(
+            f"Database schema verification failed: {type(exc).__name__}"
         ) from exc

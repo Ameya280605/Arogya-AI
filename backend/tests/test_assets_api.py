@@ -25,7 +25,15 @@ from sqlalchemy.orm import Session, sessionmaker
 from sqlalchemy.pool import StaticPool
 
 from backend.app.db import Base, get_db
-from backend.app.db.models import AuditEvent, Encounter, Patient, Role, UploadedAsset, User
+from backend.app.db.models import (
+    AuditEvent,
+    Encounter,
+    Patient,
+    Role,
+    UploadedAsset,
+    User,
+    patient_access,
+)
 from backend.app.main import create_app
 from backend.app.security.passwords import hash_password
 from backend.app.security.roles import RoleName
@@ -106,6 +114,13 @@ def asset_db(asset_engine) -> Generator[Session, None, None]:
     )
     session.add_all([doctor_user, researcher_user, patient_a, patient_b])
     session.flush()
+    session.execute(
+        patient_access.insert().values(
+            patient_id=patient_a.id,
+            user_id=doctor_user.id,
+            granted_by=doctor_user.id,
+        )
+    )
 
     # Encounter belonging to Patient B
     encounter_b = Encounter(
@@ -433,3 +448,52 @@ def test_download_nonexistent_asset_returns_404(asset_client: TestClient) -> Non
         headers={"Authorization": f"Bearer {token}"},
     )
     assert res.status_code == 404
+
+
+def test_asset_endpoints_hide_assets_for_unassigned_patients(
+    asset_client: TestClient,
+    asset_db: Session,
+    asset_storage_dir: Path,
+) -> None:
+    """Asset metadata, downloads, listing, and uploads require patient access."""
+    token = get_token(asset_client, "doc_uploader", "doc_secret_123")
+    patient_b = asset_db.scalar(
+        select(Patient).where(Patient.mrn_pseudonym == "PAT-ASSET-002")
+    )
+    foreign_asset = UploadedAsset(
+        id=uuid.uuid4(),
+        patient_id=patient_b.id,
+        original_filename="foreign.png",
+        media_type="image/png",
+        file_size_bytes=len(VALID_PNG_BYTES),
+        storage_path="foreign.png",
+        checksum_sha256="f" * 64,
+    )
+    asset_db.add(foreign_asset)
+    asset_db.commit()
+    (asset_storage_dir / "foreign.png").write_bytes(VALID_PNG_BYTES)
+
+    headers = {"Authorization": f"Bearer {token}"}
+    metadata = asset_client.get(
+        f"/api/v1/assets/{foreign_asset.id}",
+        headers=headers,
+    )
+    download = asset_client.get(
+        f"/api/v1/assets/{foreign_asset.id}/download",
+        headers=headers,
+    )
+    listing = asset_client.get(
+        f"/api/v1/patients/{patient_b.id}/assets",
+        headers=headers,
+    )
+    upload = asset_client.post(
+        "/api/v1/assets/upload",
+        headers=headers,
+        data={"patient_id": str(patient_b.id)},
+        files={"file": ("other.png", io.BytesIO(VALID_PNG_BYTES), "image/png")},
+    )
+
+    assert metadata.status_code == 404
+    assert download.status_code == 404
+    assert listing.status_code == 404
+    assert upload.status_code == 404

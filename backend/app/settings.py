@@ -6,11 +6,18 @@ Provides type-safe, validated environment settings using pydantic-settings.
 from functools import lru_cache
 from typing import Literal
 from urllib.parse import urlsplit, urlunsplit
-from pydantic import Field, SecretStr, field_validator
+from pydantic import Field, SecretStr, field_validator, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 AppEnv = Literal["development", "testing", "staging", "production"]
 LogLevel = Literal["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]
+DEVELOPMENT_SECRET_KEY = "arogya-ai-dev-insecure-secret-key-at-least-32-characters"
+LOCAL_CORS_ORIGINS = (
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+    "http://localhost:8000",
+    "http://127.0.0.1:8000",
+)
 
 
 class Settings(BaseSettings):
@@ -68,6 +75,10 @@ class Settings(BaseSettings):
         default="/redoc",
         description="Path to ReDoc documentation route, or None to disable",
     )
+    cors_allowed_origins: str | None = Field(
+        default=None,
+        description="Comma-separated browser origins permitted by CORS",
+    )
 
     # Persistence & Security Settings (Module 3 & Module 7)
     database_url: str | None = Field(
@@ -97,8 +108,21 @@ class Settings(BaseSettings):
         if self.secret_key:
             return self.secret_key.get_secret_value()
         if self.app_env in {"development", "testing"}:
-            return "arogya-ai-dev-insecure-secret-key-at-least-32-characters"
+            return DEVELOPMENT_SECRET_KEY
         raise ValueError("SECRET_KEY must be explicitly configured in staging and production environments")
+
+    @property
+    def cors_origins(self) -> list[str]:
+        """Return configured origins or local-only defaults outside deployment environments."""
+        if self.cors_allowed_origins is not None:
+            return list(dict.fromkeys(
+                origin.strip()
+                for origin in self.cors_allowed_origins.split(",")
+                if origin.strip()
+            ))
+        if self.app_env in {"development", "testing"}:
+            return list(LOCAL_CORS_ORIGINS)
+        return []
 
     @property
     def masked_database_url(self) -> str | None:
@@ -231,6 +255,65 @@ class Settings(BaseSettings):
             cleaned = v.strip()
             return cleaned if cleaned else None
         return v
+
+    @field_validator("cors_allowed_origins", mode="before")
+    @classmethod
+    def validate_cors_allowed_origins(cls, value: object) -> str | None:
+        """Accept only explicit HTTP(S) origins, never wildcard or path-based values."""
+        if value is None:
+            return None
+        if not isinstance(value, str):
+            raise ValueError("CORS_ALLOWED_ORIGINS must be a comma-separated string")
+
+        cleaned_origins = []
+        for raw_origin in value.split(","):
+            origin = raw_origin.strip()
+            if origin.endswith("/"):
+                origin = origin[:-1]
+            if not origin:
+                continue
+            try:
+                parsed = urlsplit(origin)
+                valid_port = parsed.port is None or 1 <= parsed.port <= 65535
+            except ValueError:
+                valid_port = False
+                parsed = urlsplit("")
+            if (
+                "*" in origin
+                or parsed.scheme not in {"http", "https"}
+                or not parsed.hostname
+                or any(character.isspace() for character in origin)
+                or parsed.username is not None
+                or parsed.password is not None
+                or parsed.path
+                or parsed.query
+                or parsed.fragment
+                or not valid_port
+            ):
+                raise ValueError(
+                    "CORS_ALLOWED_ORIGINS entries must be explicit HTTP(S) origins without paths"
+                )
+            cleaned_origins.append(origin)
+        return ",".join(dict.fromkeys(cleaned_origins)) or None
+
+    @model_validator(mode="after")
+    def validate_deployment_secret(self) -> "Settings":
+        """Require a non-development signing secret before staging/production startup."""
+        if self.app_env in {"staging", "production"}:
+            secret = (
+                self.secret_key.get_secret_value()
+                if self.secret_key is not None
+                else None
+            )
+            if (
+                secret is None
+                or len(secret) < 32
+                or secret == DEVELOPMENT_SECRET_KEY
+            ):
+                raise ValueError(
+                    "Staging and production require a unique SECRET_KEY of at least 32 characters"
+                )
+        return self
 
     @field_validator("debug")
     @classmethod

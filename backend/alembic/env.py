@@ -26,7 +26,7 @@ for _path in (str(_repo_root), str(_backend_dir)):
         sys.path.insert(0, _path)
 
 from backend.app.db.base import Base  # noqa: E402
-import backend.app.db.models  # noqa: F401, E402 - registers all 9 domain tables in Base.metadata
+import backend.app.db.models  # noqa: F401, E402 - registers all 10 domain tables in Base.metadata
 from backend.app.db.session import normalize_engine_url  # noqa: E402
 from backend.app.settings import get_settings  # noqa: E402
 

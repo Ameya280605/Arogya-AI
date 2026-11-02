@@ -120,6 +120,15 @@ class StorageService:
         else:
             raise FileValidationError(f"File extension '{ext}' is not permitted")
 
+    @staticmethod
+    def ensure_private_directory(directory: str | Path) -> Path:
+        """Create a storage directory and restrict POSIX access to its owner."""
+        storage_dir = Path(directory).resolve()
+        storage_dir.mkdir(parents=True, exist_ok=True, mode=0o700)
+        if os.name != "nt":
+            os.chmod(storage_dir, 0o700)
+        return storage_dir
+
     @classmethod
     def validate_and_save(
         cls,
@@ -191,8 +200,7 @@ class StorageService:
         checksum = hasher.hexdigest()
 
         # 6. Server-side UUID filename generation (prevents overwrites and traversal)
-        storage_dir = Path(storage_base_dir).resolve()
-        storage_dir.mkdir(parents=True, exist_ok=True)
+        storage_dir = cls.ensure_private_directory(storage_base_dir)
 
         asset_uuid = uuid.uuid4()
         storage_filename = f"{asset_uuid}{ext_lower}"
@@ -203,8 +211,13 @@ class StorageService:
             raise FileValidationError("Security error: target path escapes designated storage root")
 
         # 7. Write binary payload
-        with open(target_path, "wb") as f:
-            f.write(file_bytes)
+        file_descriptor = os.open(
+            target_path,
+            os.O_WRONLY | os.O_CREAT | os.O_EXCL,
+            0o600,
+        )
+        with os.fdopen(file_descriptor, "wb") as stored_file:
+            stored_file.write(file_bytes)
 
         # Relative storage locator stored in DB
         relative_storage_path = storage_filename
@@ -237,5 +250,9 @@ class StorageService:
 
         if not target.exists() or not target.is_file():
             raise FileValidationError("Requested file does not exist on storage volume")
+
+        if os.name != "nt":
+            os.chmod(storage_dir, 0o700)
+            os.chmod(target, 0o600)
 
         return target
