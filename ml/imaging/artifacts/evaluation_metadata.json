@@ -1,0 +1,31 @@
+﻿{
+  "model_weights": "densenet121-res224-nih",
+  "model_library_version": "1.5.7",
+  "random_seed": 42,
+  "test_size": 0.2,
+  "batch_size": 16,
+  "available_images": 4999,
+  "available_patients": 1335,
+  "evaluation_images": 994,
+  "evaluation_patients": 267,
+  "patient_overlap_between_splits": 0,
+  "labels": [
+    "Atelectasis",
+    "Consolidation",
+    "Infiltration",
+    "Pneumothorax",
+    "Edema",
+    "Emphysema",
+    "Fibrosis",
+    "Effusion",
+    "Pneumonia",
+    "Pleural_Thickening",
+    "Cardiomegaly",
+    "Nodule",
+    "Mass",
+    "Hernia"
+  ],
+  "score_interpretation": "Raw model scores; not calibrated probabilities and not diagnoses.",
+  "validation_limitation": "The model was pretrained on NIH ChestX-ray14. Evaluation images come from the same dataset, and overlap with model pretraining cannot be ruled out. This is not independent external validation.",
+  "research_only": true
+}
