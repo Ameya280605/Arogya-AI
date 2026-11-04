@@ -9,7 +9,8 @@ A modular, research-oriented healthcare intelligence and clinical decision-suppo
 
 ## 1. Project Status
 
-- **Development Milestone:** Modules 1–10 are completed and integrated. Development is complete through Module 10; Modules 11–21 remain planned and are not yet implemented.
+- **Development Milestone:** Modules 1–10 are completed and integrated. Modules 11–21 remain planned and are not yet implemented.
+- **Module 8 — Clinical Workspace:** Patient-scoped case drafts, unit-aware measurement validation, secure attachments, persistent analysis lifecycle, and a responsive workspace integrated with Modules 6, 7, 9, and 10.
 - **Module 9 — Tabular ML Research:** A structured-data classification baseline with reproducible training and evaluation tooling is integrated for research use.
 - **Module 10 — Chest X-ray Imaging Research:** The TorchXRayVision DenseNet-121 NIH inference pipeline, authenticated imaging API, patient/image selection UI, raw score display, and optional protected Grad-CAM retrieval are integrated.
 - **Backend:** FastAPI, PostgreSQL, SQLAlchemy, Alembic migrations, Pydantic schemas, repositories, clinical services, and versioned REST endpoints.

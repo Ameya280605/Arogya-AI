@@ -257,7 +257,7 @@ All navigation links resolve to valid, statically prerendered routes inside the 
 | :--- | :--- | :--- | :--- | :--- |
 | **Overview** | `/` | Module 5 | Clinical intelligence overview, summary cards & recent activity | Active Overview UI (Phase 5.2) |
 | **Patient Intelligence** | `/patients` | Module 6 | Longitudinal timelines, encounter history, vitals | Planned Roadmap Preview |
-| **Clinical Workspace** | `/analysis` | Module 8 | Multimodal case intake, triage, and review | Planned Roadmap Preview |
+| **Clinical Workspace** | `/analysis` | Module 8 | Patient-linked case intake, validation, attachments, and human-reviewed research runs | Integrated |
 | **AI Research Lab** | `/research` | Module 18 / M9–14 | Model evaluation, SHAP, and Grad-CAM benches | Planned Roadmap Preview |
 | **Administration** | `/admin` | Module 19 | Role-based access control & audit trail | Planned Roadmap Preview |
 

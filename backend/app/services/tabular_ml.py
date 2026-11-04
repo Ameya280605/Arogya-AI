@@ -14,6 +14,7 @@ from __future__ import annotations
 
 import logging
 import threading
+from collections.abc import Callable
 from datetime import datetime, timezone
 from typing import Any
 from uuid import UUID
@@ -70,6 +71,8 @@ class TabularMLService:
         patient_id: UUID,
         request_data: TabularInferenceRequest,
         actor_id: UUID | None = None,
+        run_id: UUID | None = None,
+        before_inference: Callable[[], None] | None = None,
     ) -> AnalysisRun:
         """Execute tabular inference for a patient and record full lifecycle in AnalysisRun.
 
@@ -94,15 +97,35 @@ class TabularMLService:
             ConsistencyError: If the encounter does not belong to the specified patient.
         """
         # 1. Initiate run via ClinicalService (enforcing referential integrity and audit trail)
-        run_create = AnalysisRunCreate(
-            patient_id=patient_id,
-            encounter_id=request_data.encounter_id,
-            asset_id=None,
-            model_name=self.predictor.model_name,
-            model_version=self.predictor.model_version,
-            parameters=request_data.parameters,
-        )
-        run = self.clinical_service.create_analysis_run(data=run_create, actor_id=actor_id)
+        if run_id is None:
+            run_create = AnalysisRunCreate(
+                patient_id=patient_id,
+                encounter_id=request_data.encounter_id,
+                asset_id=None,
+                model_name=self.predictor.model_name,
+                model_version=self.predictor.model_version,
+                parameters=request_data.parameters,
+            )
+            run = self.clinical_service.create_analysis_run(
+                data=run_create,
+                actor_id=actor_id,
+            )
+        else:
+            run = self.clinical_service.get_analysis_run(run_id)
+            if (
+                run is None
+                or run.patient_id != patient_id
+                or run.encounter_id != request_data.encounter_id
+                or run.model_name != self.predictor.model_name
+                or run.status not in {"draft", "queued"}
+            ):
+                raise ConsistencyError("The saved analysis run is not eligible for tabular execution.")
+            if run.status == "draft":
+                self.clinical_service.update_analysis_status(
+                    run_id=run.id,
+                    status="queued",
+                    actor_id=actor_id,
+                )
 
         # 2. Mark execution commencement
         started_at = datetime.now(timezone.utc)
@@ -112,6 +135,8 @@ class TabularMLService:
             started_at=started_at,
             actor_id=actor_id,
         )
+        if before_inference is not None:
+            before_inference()
 
         # 3. Format input dictionary for TabularPredictor
         feature_dict: dict[str, Any] = {
@@ -154,4 +179,3 @@ class TabularMLService:
                 actor_id=actor_id,
             )
             return failed_run
-

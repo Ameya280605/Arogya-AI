@@ -435,6 +435,7 @@ class ClinicalService:
         self,
         data: AnalysisRunCreate,
         actor_id: UUID | None = None,
+        initial_status: str = "queued",
     ) -> AnalysisRun:
         """Create a new AI analysis execution run, validating cross-entity associations.
 
@@ -442,6 +443,9 @@ class ClinicalService:
             EntityNotFoundError: If encounter or asset does not exist.
             ConsistencyError: If the asset does not match the encounter's patient.
         """
+        if initial_status not in {"draft", "queued"}:
+            raise ConsistencyError(f"Unsupported initial analysis run status '{initial_status}'.")
+
         # 1. Verify patient exists
         patient = self.patient_repo.get_by_id(data.patient_id)
         if patient is None:
@@ -481,17 +485,21 @@ class ClinicalService:
             asset_id=data.asset_id,
             model_name=data.model_name,
             model_version=data.model_version,
-            status="queued",
+            status=initial_status,
             parameters=data.parameters,
         )
 
         self.audit_service.record_event(
-            event_type="analysis.queued",
+            event_type="analysis.queued" if run.status == "queued" else "analysis.draft_created",
             action="create",
             actor_id=actor_id,
             resource_type="analysis_run",
             resource_id=str(run.id),
-            description=f"Queued analysis run '{run.model_name}' ({run.model_version})",
+            description=(
+                f"Queued analysis run '{run.model_name}' ({run.model_version})"
+                if run.status == "queued"
+                else f"Created analysis draft '{run.model_name}' ({run.model_version})"
+            ),
             event_metadata={
                 "model_name": run.model_name,
                 "model_version": run.model_version,
@@ -516,9 +524,26 @@ class ClinicalService:
         if run is None:
             raise EntityNotFoundError("AnalysisRun", run_id)
 
+        allowed_transitions = {
+            "draft": {"queued"},
+            "queued": {"running", "completed", "failed"},
+            "running": {"completed", "failed", "needs_review"},
+            "completed": {"needs_review"},
+            "failed": {"queued"},
+            "needs_review": {"completed"},
+            "abstained": set(),
+        }
+        normalized_status = status.strip().lower()
+        if normalized_status not in allowed_transitions:
+            raise ConsistencyError(f"Unsupported analysis run status '{normalized_status}'.")
+        if normalized_status not in allowed_transitions.get(run.status, set()):
+            raise ConsistencyError(
+                f"Invalid analysis run transition from '{run.status}' to '{normalized_status}'."
+            )
+
         updated_run = self.analysis_repo.update_status(
             run=run,
-            status=status,
+            status=normalized_status,
             results_summary=results_summary,
             error_message=error_message,
             started_at=started_at,

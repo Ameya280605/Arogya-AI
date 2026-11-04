@@ -12,6 +12,7 @@ from backend.app.api.auth import router as auth_router
 from backend.app.api.dashboard import router as dashboard_router
 from backend.app.api.health import router as health_router
 from backend.app.api.imaging import router as imaging_router
+from backend.app.api.clinical_workspace import router as clinical_workspace_router
 from backend.app.api.patients import router as patients_router
 from backend.app.errors import register_exception_handlers
 from backend.app.logging import setup_logging
@@ -43,6 +44,10 @@ OPENAPI_TAGS = [
     {
         "name": "Research Analysis & AI Models",
         "description": "Exploratory AI research model inference runs and tabular respiratory risk evaluation.",
+    },
+    {
+        "name": "Clinical Workspace",
+        "description": "Patient-scoped clinical case drafts, unit-aware data quality, attachments, and human-reviewed research runs.",
     },
 ]
 
@@ -87,7 +92,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         CORSMiddleware,
         allow_origins=app_settings.cors_origins,
         allow_credentials=True,
-        allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+        allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
         allow_headers=["*"],
     )
 
@@ -103,6 +108,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     app.include_router(assets_router, prefix=prefix)
     app.include_router(analysis_router, prefix=prefix)
     app.include_router(imaging_router, prefix=prefix)
+    app.include_router(clinical_workspace_router, prefix=prefix)
 
     return app
 

@@ -39,6 +39,7 @@ class Permission(str, Enum):
     # AI & research analysis runs
     ANALYSIS_READ = "analysis:read"
     ANALYSIS_EXECUTE = "analysis:execute"
+    ANALYSIS_REVIEW = "analysis:review"
 
     # File and medical asset management
     ASSET_READ = "asset:read"
@@ -64,6 +65,7 @@ ROLE_PERMISSIONS: dict[str, set[Permission]] = {
         Permission.OBSERVATION_CREATE,
         Permission.ANALYSIS_READ,
         Permission.ANALYSIS_EXECUTE,
+        Permission.ANALYSIS_REVIEW,
         Permission.ASSET_READ,
         Permission.ASSET_UPLOAD,
         Permission.ASSET_DELETE,
@@ -80,8 +82,11 @@ ROLE_PERMISSIONS: dict[str, set[Permission]] = {
         Permission.OBSERVATION_READ,
         Permission.OBSERVATION_CREATE,
         Permission.ANALYSIS_READ,
+        Permission.ANALYSIS_EXECUTE,
+        Permission.ANALYSIS_REVIEW,
         Permission.ASSET_READ,
         Permission.ASSET_UPLOAD,
+        Permission.ASSET_DELETE,
     },
     RoleName.CLINICIAN.value: {
         Permission.PATIENT_READ,
@@ -93,8 +98,11 @@ ROLE_PERMISSIONS: dict[str, set[Permission]] = {
         Permission.OBSERVATION_READ,
         Permission.OBSERVATION_CREATE,
         Permission.ANALYSIS_READ,
+        Permission.ANALYSIS_EXECUTE,
+        Permission.ANALYSIS_REVIEW,
         Permission.ASSET_READ,
         Permission.ASSET_UPLOAD,
+        Permission.ASSET_DELETE,
     },
     RoleName.RESEARCHER.value: {
         # Researchers have read-only access to synthetic/research datasets and analyses

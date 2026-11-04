@@ -65,7 +65,9 @@ def execute_tabular_analysis(
             patient_id=patient_id,
             request_data=payload,
             actor_id=current_user.id,
+            before_inference=session.commit,
         )
+        run.retry_payload = payload.model_dump(mode="json")
         session.commit()
         return AnalysisRunResponse.model_validate(run)
 

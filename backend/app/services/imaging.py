@@ -1,6 +1,7 @@
 """Research-only chest X-ray inference and analysis lifecycle."""
 
 import logging
+from collections.abc import Callable
 from datetime import datetime, timezone
 from pathlib import Path
 from threading import Lock
@@ -120,6 +121,8 @@ class ImagingMLService:
         generate_heatmap: bool = False,
         heatmap_label: str = "Pneumonia",
         actor_id: UUID | None = None,
+        run_id: UUID | None = None,
+        before_inference: Callable[[], None] | None = None,
     ):
         """Validate an uploaded image, execute inference, and persist its run."""
 
@@ -155,21 +158,46 @@ class ImagingMLService:
         effective_encounter_id = encounter_id or asset.encounter_id
 
         # ClinicalService also validates patient/encounter consistency.
-        run = clinical.create_analysis_run(
-            AnalysisRunCreate(
-                patient_id=patient_id,
-                encounter_id=effective_encounter_id,
-                asset_id=asset.id,
-                model_name=self.MODEL_NAME,
-                model_version=self.MODEL_VERSION,
-                parameters={
-                    "generate_heatmap": generate_heatmap,
-                    "heatmap_label": heatmap_label,
-                    "research_only": True,
-                },
-            ),
-            actor_id=actor_id,
-        )
+        if run_id is None:
+            run = clinical.create_analysis_run(
+                AnalysisRunCreate(
+                    patient_id=patient_id,
+                    encounter_id=effective_encounter_id,
+                    asset_id=asset.id,
+                    model_name=self.MODEL_NAME,
+                    model_version=self.MODEL_VERSION,
+                    parameters={
+                        "generate_heatmap": generate_heatmap,
+                        "heatmap_label": heatmap_label,
+                        "research_only": True,
+                    },
+                ),
+                actor_id=actor_id,
+            )
+        else:
+            run = clinical.get_analysis_run(run_id)
+            if (
+                run is None
+                or run.patient_id != patient_id
+                or run.encounter_id != effective_encounter_id
+                or run.asset_id != asset.id
+                or run.model_name != self.MODEL_NAME
+                or run.status not in {"draft", "queued"}
+            ):
+                raise ValueError("The saved analysis run is not eligible for imaging execution.")
+            if run.status == "draft":
+                clinical.update_analysis_status(
+                    run.id,
+                    status="queued",
+                    actor_id=actor_id,
+                )
+
+        run.retry_payload = {
+            "asset_id": str(asset.id),
+            "encounter_id": str(effective_encounter_id) if effective_encounter_id else None,
+            "generate_heatmap": generate_heatmap,
+            "heatmap_label": heatmap_label,
+        }
 
         now = datetime.now(timezone.utc)
 
@@ -179,6 +207,8 @@ class ImagingMLService:
             started_at=now,
             actor_id=actor_id,
         )
+        if before_inference is not None:
+            before_inference()
 
         try:
             settings = get_settings()
@@ -204,13 +234,20 @@ class ImagingMLService:
                 heatmap_label=heatmap_label,
             )
 
-            clinical.update_analysis_status(
+            completed_run = clinical.update_analysis_status(
                 run.id,
                 status="completed",
                 results_summary=results,
                 completed_at=datetime.now(timezone.utc),
                 actor_id=actor_id,
             )
+            if generate_heatmap:
+                completed_run.output_references = [
+                    {
+                        "type": "imaging_heatmap",
+                        "href": f"/analysis-runs/{run.id}/imaging/heatmap",
+                    }
+                ]
 
         except Exception:
             logger.exception(

@@ -23,11 +23,14 @@ from sqlalchemy import (
     DateTime,
     Float,
     ForeignKey,
+    Index,
     JSON,
+    Integer,
     String,
     Table,
     Text,
     Uuid,
+    text,
 )
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -304,6 +307,12 @@ class Encounter(Base):
         nullable=True,
         doc="Conclusion timestamp of encounter",
     )
+    symptoms: Mapped[str | None] = mapped_column(Text, nullable=True)
+    symptom_duration: Mapped[str | None] = mapped_column(String(255), nullable=True)
+    medical_history: Mapped[str | None] = mapped_column(Text, nullable=True)
+    medications: Mapped[list | None] = mapped_column(JSON, nullable=True)
+    allergies: Mapped[list | None] = mapped_column(JSON, nullable=True)
+    clinical_notes: Mapped[str | None] = mapped_column(Text, nullable=True)
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
         default=lambda: datetime.now(timezone.utc),
@@ -499,6 +508,16 @@ class AnalysisRun(Base):
     """
 
     __tablename__ = "analysis_runs"
+    __table_args__ = (
+        Index(
+            "uq_analysis_runs_active_case_model",
+            "encounter_id",
+            "model_name",
+            unique=True,
+            sqlite_where=text("status IN ('queued', 'running')"),
+            postgresql_where=text("status IN ('queued', 'running')"),
+        ),
+    )
 
     id: Mapped[uuid.UUID] = mapped_column(
         Uuid,
@@ -542,13 +561,14 @@ class AnalysisRun(Base):
         default="queued",
         nullable=False,
         index=True,
-        doc="Execution status ('queued', 'running', 'completed', 'failed', 'abstained')",
+        doc="Execution status ('draft', 'queued', 'running', 'completed', 'failed', 'needs_review', legacy 'abstained')",
     )
     parameters: Mapped[dict | None] = mapped_column(
         JSON,
         nullable=True,
         doc="Execution parameters and decision thresholds",
     )
+    retry_payload: Mapped[dict | None] = mapped_column(JSON, nullable=True)
     results_summary: Mapped[dict | None] = mapped_column(
         JSON,
         nullable=True,
@@ -569,9 +589,17 @@ class AnalysisRun(Base):
         nullable=True,
         doc="Run completion timestamp",
     )
+    output_references: Mapped[list | None] = mapped_column(JSON, nullable=True)
+    retry_count: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
         default=lambda: datetime.now(timezone.utc),
+        nullable=False,
+    )
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        default=lambda: datetime.now(timezone.utc),
+        onupdate=lambda: datetime.now(timezone.utc),
         nullable=False,
     )
 

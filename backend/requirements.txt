@@ -20,6 +20,11 @@ bcrypt>=4.0.0,<6.0.0
 pyjwt>=2.8.0,<3.0.0
 python-multipart>=0.0.9,<1.0.0
 
+# Module 9 tabular inference runtime
+pandas>=2.0.0,<4.0.0
+scikit-learn>=1.5.0,<2.0.0
+joblib>=1.3.0,<2.0.0
+
 # Chest X-ray inference and Grad-CAM
 numpy>=1.24.0,<3.0.0
 torch>=2.0.0,<3.0.0

@@ -11,7 +11,7 @@ Boundary Principles:
 from datetime import datetime
 from typing import Any
 from uuid import UUID
-from pydantic import Field
+from pydantic import Field, field_validator
 from backend.app.schemas.common import BaseSchema, ORMModel
 
 
@@ -77,11 +77,16 @@ class AnalysisRunResponse(ORMModel):
         description="Executed model release version",
     )
     status: str = Field(
-        description="Execution lifecycle state ('queued', 'running', 'completed', 'failed', 'abstained')",
+        description="Execution lifecycle state ('draft', 'queued', 'running', 'completed', 'failed', 'needs_review')",
     )
     parameters: dict[str, Any] | None = Field(
         default=None,
         description="Runtime hyperparameters applied to execution",
+    )
+    draft_input: dict[str, Any] | None = Field(
+        default=None,
+        validation_alias="retry_payload",
+        description="Saved modality-specific input used to reopen a draft",
     )
     results_summary: dict[str, Any] | None = Field(
         default=None,
@@ -99,9 +104,20 @@ class AnalysisRunResponse(ORMModel):
         default=None,
         description="Execution completion timestamp in UTC",
     )
+    output_references: list[dict[str, Any]] | None = Field(
+        default=None,
+        description="References to artifacts produced by this run",
+    )
+    retry_count: int = Field(default=0, ge=0)
     created_at: datetime = Field(
         description="Task creation timestamp in UTC",
     )
+    updated_at: datetime | None = Field(default=None)
+
+    @field_validator("retry_count", mode="before")
+    @classmethod
+    def default_unset_retry_count(cls, value: int | None) -> int:
+        return 0 if value is None else value
 
 
 class TabularInferenceRequest(BaseSchema):
@@ -153,4 +169,3 @@ class TabularInferenceRequest(BaseSchema):
         default=None,
         description="Optional runtime execution parameters or confidence thresholds",
     )
-

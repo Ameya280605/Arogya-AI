@@ -144,7 +144,7 @@ describe("Planned Route Content & Disclaimer Integrity", () => {
     { route: "monitoring", file: "../app/monitoring/page.tsx", moduleNum: 20, isPlannedState: true },
     { route: "readiness", file: "../app/readiness/page.tsx", moduleNum: 21, isPlannedState: true },
     { route: "patients", file: "../app/patients/page.tsx", moduleNum: 6, isPlannedState: false },
-    { route: "analysis", file: "../app/analysis/page.tsx", moduleNum: 8, isPlannedState: true },
+    { route: "analysis", file: "../app/analysis/page.tsx", moduleNum: 8, isPlannedState: false },
     { route: "admin", file: "../app/admin/page.tsx", moduleNum: 19, isPlannedState: true },
     { route: "research", file: "../app/research/page.tsx", moduleNum: 18, isPlannedState: true },
     { route: "root", file: "../app/page.tsx", moduleNum: 5, isPlannedState: false },

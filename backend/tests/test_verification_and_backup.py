@@ -67,15 +67,15 @@ def test_verify_database_success() -> None:
     # Create alembic_version table with matching head revision
     with engine.begin() as conn:
         conn.execute(text("CREATE TABLE alembic_version (version_num VARCHAR(32) NOT NULL PRIMARY KEY);"))
-        conn.execute(text("INSERT INTO alembic_version (version_num) VALUES ('20261102_access');"))
+        conn.execute(text("INSERT INTO alembic_version (version_num) VALUES ('20261104_workspace');"))
 
     result = verify_database(engine=engine, repo_root=REPO_ROOT)
     assert result.exit_code == EXIT_SUCCESS
     assert result.status == "VERIFIED"
     assert result.dialect == "sqlite"
     assert result.missing_tables == []
-    assert result.current_revision == "20261102_access"
-    assert result.expected_revision == "20261102_access"
+    assert result.current_revision == "20261104_workspace"
+    assert result.expected_revision == "20261104_workspace"
     assert len(result.found_tables or []) >= 10
 
 
@@ -112,7 +112,7 @@ def test_verify_database_migration_mismatch() -> None:
     assert result.exit_code == EXIT_MIGRATION_MISMATCH
     assert result.status == "MIGRATION_MISMATCH"
     assert result.current_revision == "outdated_rev_0001"
-    assert result.expected_revision == "20261102_access"
+    assert result.expected_revision == "20261104_workspace"
 
 
 def test_verify_database_connection_failure_and_secret_redaction() -> None:

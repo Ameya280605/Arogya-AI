@@ -58,6 +58,7 @@ def execute_imaging_analysis(
             generate_heatmap=payload.generate_heatmap,
             heatmap_label=payload.heatmap_label,
             actor_id=current_user.id,
+            before_inference=session.commit,
         )
 
         session.commit()

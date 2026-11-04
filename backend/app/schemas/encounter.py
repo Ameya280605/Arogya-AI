@@ -12,7 +12,7 @@ from pydantic import Field, field_validator, model_validator
 from backend.app.schemas.common import BaseSchema, ORMModel, ensure_timezone_aware
 
 EncounterType = Literal["ambulatory", "inpatient", "emergency", "synthetic"]
-EncounterStatus = Literal["planned", "in_progress", "completed", "cancelled"]
+EncounterStatus = Literal["draft", "planned", "in_progress", "completed", "cancelled"]
 
 
 class EncounterBase(BaseSchema):
@@ -118,6 +118,12 @@ class EncounterResponse(EncounterBase, ORMModel):
     patient_id: UUID = Field(
         description="Identifier of associated patient record",
     )
+    symptoms: str | None = None
+    symptom_duration: str | None = None
+    medical_history: str | None = None
+    medications: list[str] | None = None
+    allergies: list[str] | None = None
+    clinical_notes: str | None = None
     created_at: datetime = Field(
         description="Record creation timestamp in UTC",
     )
@@ -131,4 +137,3 @@ class EncounterResponse(EncounterBase, ORMModel):
         if isinstance(v, datetime) and v.tzinfo is None:
             return v.replace(tzinfo=timezone.utc)
         return v
-

@@ -10,6 +10,7 @@ Exposes endpoints for:
 
 import logging
 import uuid
+from pathlib import Path
 from fastapi import APIRouter, Depends, File, Form, HTTPException, Request, UploadFile, status
 from fastapi.responses import FileResponse
 from sqlalchemy import select
@@ -104,6 +105,11 @@ async def upload_asset(
             raise HTTPException(
                 status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
                 detail=f"Encounter '{encounter_id}' does not belong to patient '{patient_id}'",
+            )
+        if Path(file.filename or "").suffix.lower() not in {".pdf", ".png", ".jpg", ".jpeg"}:
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                detail="Case attachments must be PDF, PNG, or JPEG files.",
             )
 
     # 3. Read payload and inspect bounds
@@ -275,3 +281,72 @@ def list_patient_assets(
     )
     assets = db.scalars(stmt).all()
     return [UploadedAssetResponse.model_validate(a) for a in assets]
+
+
+@router.get(
+    "/cases/{case_id}/attachments",
+    response_model=list[UploadedAssetResponse],
+    status_code=status.HTTP_200_OK,
+    summary="List attachments for a clinical case",
+)
+def list_case_attachments(
+    case_id: uuid.UUID,
+    current_user: User = Depends(require_permission(Permission.ASSET_READ)),
+    db: Session = Depends(get_db),
+) -> list[UploadedAssetResponse]:
+    encounter = db.get(Encounter, case_id)
+    if encounter is None:
+        raise HTTPException(status_code=404, detail="Clinical case was not found.")
+    require_patient_access(db, current_user, encounter.patient_id)
+    assets = db.scalars(
+        select(UploadedAsset)
+        .where(
+            UploadedAsset.patient_id == encounter.patient_id,
+            UploadedAsset.encounter_id == encounter.id,
+        )
+        .order_by(UploadedAsset.created_at.desc())
+    ).all()
+    return [UploadedAssetResponse.model_validate(asset) for asset in assets]
+
+
+@router.delete(
+    "/assets/{asset_id}",
+    status_code=status.HTTP_204_NO_CONTENT,
+    summary="Remove an authorized clinical attachment",
+)
+def delete_asset(
+    asset_id: uuid.UUID,
+    request: Request,
+    current_user: User = Depends(require_permission(Permission.ASSET_DELETE)),
+    db: Session = Depends(get_db),
+    settings: Settings = Depends(get_settings),
+) -> None:
+    asset = db.get(UploadedAsset, asset_id)
+    if asset is None:
+        raise HTTPException(status_code=404, detail="Attachment was not found.")
+    require_patient_access(db, current_user, asset.patient_id)
+    app_settings: Settings = getattr(request.app.state, "settings", None) or settings
+    try:
+        file_path = StorageService.resolve_file_path(
+            asset.storage_path,
+            app_settings.upload_storage_dir,
+        )
+        Path(file_path).unlink()
+    except FileValidationError as exc:
+        raise HTTPException(status_code=404, detail="Attachment file is unavailable.") from exc
+    except OSError as exc:
+        logger.exception("Could not remove attachment %s from storage.", asset_id)
+        raise HTTPException(status_code=500, detail="Attachment could not be removed from storage.") from exc
+
+    AuditService(db).record_event(
+        event_type="asset.deleted",
+        action="delete",
+        actor_id=current_user.id,
+        resource_type="asset",
+        resource_id=str(asset.id),
+        description="Removed a clinical attachment.",
+        metadata={"patient_id": str(asset.patient_id), "encounter_id": str(asset.encounter_id)},
+        request=request,
+    )
+    db.delete(asset)
+    db.commit()

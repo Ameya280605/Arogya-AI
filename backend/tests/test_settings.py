@@ -189,6 +189,21 @@ def test_configured_cors_origins_control_preflight_access() -> None:
     assert response.headers["access-control-allow-credentials"] == "true"
 
 
+def test_local_cors_preflight_allows_case_update_patch() -> None:
+    app = create_app(Settings(_env_file=None, app_env="development"))
+    response = TestClient(app).options(
+        "/api/v1/cases/00000000-0000-0000-0000-000000000001",
+        headers={
+            "Origin": "http://localhost:3000",
+            "Access-Control-Request-Method": "PATCH",
+            "Access-Control-Request-Headers": "authorization,content-type",
+        },
+    )
+    assert response.status_code == 200
+    assert response.headers["access-control-allow-origin"] == "http://localhost:3000"
+    assert "PATCH" in response.headers["access-control-allow-methods"]
+
+
 def test_deployment_cors_does_not_allow_local_origin_by_default() -> None:
     app = create_app(
         Settings(

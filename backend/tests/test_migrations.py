@@ -58,17 +58,17 @@ def test_target_metadata_contains_all_ten_domain_tables() -> None:
 
 
 def test_migration_head_extends_initial_schema(alembic_config: Config) -> None:
-    """Verify the patient access migration follows the initial schema."""
+    """Verify patient access and clinical workspace migrations extend the initial schema."""
     script_dir = ScriptDirectory.from_config(alembic_config)
     head_revision = script_dir.get_current_head()
-    assert head_revision == "20261102_access"
+    assert head_revision == "20261104_workspace"
     initial = script_dir.get_revision("98574e91500e")
     assert initial is not None
     assert initial.down_revision is None
     assert "initial" in initial.doc.lower()
     head = script_dir.get_revision(head_revision)
     assert head is not None
-    assert head.down_revision == "98574e91500e"
+    assert head.down_revision == "20261102_access"
 
 
 def test_initial_migration_contains_all_expected_tables(alembic_config: Config) -> None:

@@ -2,8 +2,7 @@
 
 This directory contains the Python backend service, REST API routers, domain logic, and backend test suites for Arogya AI.
 
-> **Status:** Module 3 (Database Persistence & Data Layer) — Phase 3.7: Database Verification and Backup Strategy (Module 3 Complete).<br/>
-> The database foundation includes PostgreSQL engine configuration, session lifecycle dependencies, 8 domain models + 2 association tables, 32 Pydantic data contracts, Alembic schema migrations (initial revision `98574e91500e`, current head `20261102_access`), synthetic development seed data, data access repositories, clinical domain services (`ClinicalService`, `UserService`, `AuditService`), read-only database verification (`scripts/verify_database.py`), logical PostgreSQL backups (`scripts/backup_database.py`), and safe disaster recovery procedures (`scripts/restore_database.py`). Architecture details: [`docs/architecture/CONFIGURATION.md`](../docs/architecture/CONFIGURATION.md) and [`docs/architecture/API_DATA_CONTRACTS.md`](../docs/architecture/API_DATA_CONTRACTS.md).
+> **Status:** Modules 3 and 8 are integrated. The database foundation includes PostgreSQL engine configuration, session lifecycle dependencies, patient/encounter/observation/asset/run models, Alembic schema migrations (current head `20261104_workspace`), synthetic development seed data, repositories, clinical domain services, and clinical case APIs. Architecture details: [`docs/architecture/CONFIGURATION.md`](../docs/architecture/CONFIGURATION.md) and [`docs/architecture/API_DATA_CONTRACTS.md`](../docs/architecture/API_DATA_CONTRACTS.md).
 
 ---
 
@@ -29,7 +28,7 @@ This directory contains the Python backend service, REST API routers, domain log
 
 ### Chest X-ray Imaging (Research Only)
 
-The backend exposes `POST /api/v1/patients/{patient_id}/analysis/imaging` and authenticated `GET /api/v1/analysis-runs/{run_id}/imaging/heatmap`. The API prefix is configurable through `API_PREFIX` (default `/api/v1`). Inference accepts an existing PNG/JPEG asset belonging to the requested patient; it does not accept DICOM. The JSON request requires `asset_id` and optionally accepts `encounter_id`, `generate_heatmap`, and `heatmap_label`. Starting inference requires `analysis:execute`; reading a generated heatmap requires `analysis:read`. Currently only the administrator role is granted `analysis:execute`.
+The backend exposes `POST /api/v1/patients/{patient_id}/analysis/imaging` and authenticated `GET /api/v1/analysis-runs/{run_id}/imaging/heatmap`. The clinical workspace uses `/patients/{patient_id}/cases`, `/cases/{case_id}`, `/cases/{case_id}/analysis-runs`, and `/analysis-runs/{run_id}/{submit,retry,review}`. Case inference reuses the same tabular and imaging services. Inference accepts existing PNG/JPEG assets; case attachments support PDF, PNG, and JPEG. Starting analysis requires `analysis:execute`; recording human review requires `analysis:review`; reading a generated heatmap requires `analysis:read`.
 
 The service loads TorchXRayVision weights `densenet121-res224-nih` on the first inference. The checkpoint `nih-densenet121-d121-tw-lr001-rot45-tr15-sc15-seed0-best.pt` is not bundled with the repository; TorchXRayVision downloads it when missing from `~/.torchxrayvision/models_data/` for the backend service account. Provision that file/cache before running offline, or allow outbound network access. The model runs on CPU and its returned values are raw, uncalibrated scores.
 
@@ -43,7 +42,7 @@ Staging and production require a unique `SECRET_KEY` of at least 32 characters a
 
 Role permissions are supplemented by explicit user-to-patient grants. Creating a patient grants access to the creator; administrators do not bypass assignments. Users with `user:manage` may grant or revoke access using `PUT` or `DELETE /api/v1/patients/{patient_id}/access/{user_id}`. Patient lists and patient-associated resources, including assets, analyses, and heatmaps, are restricted to assigned patients. Unassigned and nonexistent patient resources return the same not-found response.
 
-Apply database migrations through the current Alembic head (`20261102_access`) before deployment. The access migration does not assign existing patients to users; grant access explicitly after upgrading.
+Apply database migrations through the current Alembic head (`20261104_workspace`) before deployment. The access migration does not assign existing patients to users; grant access explicitly after upgrading.
 
 ---
 

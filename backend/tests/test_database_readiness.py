@@ -29,7 +29,7 @@ def _create_database(revision: str):
 
 
 def test_database_schema_ready_at_current_migration_head():
-    engine = _create_database("20261102_access")
+    engine = _create_database("20261104_workspace")
     try:
         assert check_database_schema(engine=engine) is True
     finally:
